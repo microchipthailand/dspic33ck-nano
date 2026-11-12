@@ -1,0 +1,350 @@
+# dsPIC33CK Nano platform configuration (Arduino-compatible; derived from the
+# Arduino_dsPIC33CK project by 9Nicotin - see NOTICE.md at the repo root)
+# Integrates Microchip XC-DSC into Arduino IDE
+#
+# C++ SUPPORT: XC-DSC v4.00+ is REQUIRED. There is no C-mode fallback: both
+# compiler.c.cmd and compiler.cpp.cmd are xc-dsc-g++.bat, the shims call
+# xc-dsc-g++.exe unconditionally, and cores/ and libraries/ contain real C++
+# (HardwareSerial is a class). A v3.x install cannot build this platform - the
+# resolver will find no xc-dsc-g++.exe and fail the build with a message saying
+# so. Install v4.00+ rather than trying to revert anything to xc-dsc-gcc.
+#
+# DFP COMPATIBILITY: Older DFP headers use __prog__ qualifier which is
+# C-only. The -D__prog__="" flag in cpp.flags makes them C++ compatible.
+#
+# PORTABILITY: this file contains no machine-specific paths, so the platform can
+# be installed straight from the Board Manager URL. The three external things it
+# needs are found in three different ways, because they are constrained
+# differently:
+#
+#   Device Family Packs - Apache-2.0, so they are redistributed as Board Manager
+#     tool packs (pruned to the supported devices) and reached through
+#     {runtime.tools.<pack>.path}, which is always correct.
+#   XC-DSC compiler     - licence is "non-transferable", so it cannot be shipped
+#     as a tool pack. Located at BUILD time by tools/xc-dsc-find.bat, via the
+#     shims in tools/bin/.
+#   MPLAB X IPE         - same, located at UPLOAD time by the same script.
+#
+# Board Manager only downloads and unzips; it runs no post-install script. So
+# there is nothing that could write an absolute path into this platform at
+# install time, which is why detection happens at the moment of use instead.
+# platform.local.txt is still honoured as an override and always wins.
+
+name=dsPIC33CK Nano (custom board)
+version=1.0.0
+
+# ============================================================
+# Compiler Configuration
+# ============================================================
+
+# Every compiler call goes through a shim in tools/bin/ that resolves the real
+# XC-DSC install first (tools/xc-dsc-find.bat) and then execs the matching .exe.
+# The shims are named after the tools, so the recipes below read the same as
+# before; the ".bat" suffix is the only visible difference.
+compiler.path={runtime.platform.path}/tools/bin/
+compiler.c.cmd=xc-dsc-g++.bat
+compiler.cpp.cmd=xc-dsc-g++.bat
+compiler.asm.cmd=xc-dsc-as.bat
+compiler.ar.cmd=xc-dsc-ar.bat
+compiler.ld.cmd=xc-dsc-gcc.bat
+compiler.objcopy.cmd=xc-dsc-objcopy.bat
+compiler.size.cmd=xc-dsc-size.bat
+compiler.bin2hex.cmd=xc-dsc-bin2hex.bat
+
+# --- Optional overrides, for platform.local.txt only -----------------------
+# These two keys are NOT consumed by the recipes below; tools/xc-dsc-find.bat
+# reads them straight out of platform.local.txt, and they are declared here only
+# to document their names and to make "empty means auto-detect" explicit. Set
+# one only if the tool is installed somewhere the default install roots are not.
+#   build.compiler.path=D:/somewhere/xc-dsc/v4.00/bin/
+#   build.tools.mplab.path=D:/somewhere/MPLABX/v6.35/mplab_platform/mplab_ipe
+build.compiler.path=
+build.tools.mplab.path=
+
+# --- Device Family Packs ---------------------------------------------------
+# Supplied by the Board Manager as tool packs, so unlike the compiler these
+# paths are deterministic and need no detection. boards.txt sends the two MC
+# devices to build.dfp.path.mc; everything else uses build.dfp.path.
+# Overriding either in platform.local.txt shadows the tool pack - only do that
+# when running against a full local pack install (see install_arduino_ide.bat).
+build.dfp.path={runtime.tools.dsPIC33CK-MP_DFP.path}/xc16
+build.dfp.path.mc={runtime.tools.dsPIC33CK-MC_DFP.path}/xc16
+
+# ============================================================
+# Compiler Flags
+# ============================================================
+
+compiler.warning_flags=-Wall
+compiler.warning_flags.none=-w
+compiler.warning_flags.default=-Wall
+compiler.warning_flags.more=-Wall -Wextra
+compiler.warning_flags.all=-Wall -Wextra -Wpedantic
+
+# C compilation flags
+# NOTE: .c files are compiled as C++ (-x c++) via extra_flags to ensure
+# ABI-compatible object signatures when linking with .cpp objects.
+# WARNING: never set compiler.c.extra_flags in platform.local.txt as a bare
+# value - that REPLACES this line, drops -x c++, and the C++ core then fails to
+# link with mangled-symbol errors. To add a flag, repeat all five of these and
+# append yours.
+compiler.c.flags=-mcpu={build.mcu} -mdfp={build.dfp.path} -c -g -O1 -ffunction-sections -fdata-sections -mno-eds-warn -D__prog__="" -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_DSPIC33 -DF_CPU={build.f_cpu} -DFCY={build.fcy}
+compiler.c.extra_flags=-x c++ -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-use-cxa-atexit
+
+# C++ flags (XC-DSC v4.00+ has native C++ support)
+compiler.cpp.flags=-mcpu={build.mcu} -mdfp={build.dfp.path} -c -g -O1 -ffunction-sections -fdata-sections -mno-eds-warn -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-use-cxa-atexit -D__prog__="" -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_DSPIC33 -DF_CPU={build.f_cpu} -DFCY={build.fcy}
+compiler.cpp.extra_flags=
+
+# Assembly flags
+compiler.asm.flags=-mcpu={build.mcu} -mdfp={build.dfp.path} -c -g
+compiler.asm.extra_flags=
+
+# Per-board / per-menu-option defines, the standard Arduino hook: boards.txt sets
+# it, every recipe passes it, and it defaults to empty so nothing changes for a
+# board that does not. Added in 1.0.4 for one specific reason worth recording.
+#
+# 1.0.3 compiled the bootloader's soft-entry sniffer into the RX interrupt of
+# EVERY board, including the three that have no bootloader and cannot use it, and
+# including MC005 on "Bootloader: none". It cost 132 bytes on all four and made
+# the claim that the default path was byte-identical to 1.0.2 false - which is how
+# it was found: live_check.sh compiles the PUBLISHED archive against fixed
+# baselines and reported all four boards uniformly +132. The sniffer now needs
+# -DSERIAL_BOOTLOADER_ENTRY, and only the MC005 serial-bootloader menu option
+# passes it. Note that compiler.c.extra_flags could NOT be reused for this: it
+# carries the mandatory -x c++ set above, so a per-menu override would silently
+# drop it (see the WARNING there).
+build.extra_flags=
+
+# Archive flags
+compiler.ar.flags=rcs
+compiler.ar.extra_flags=
+
+# Linker flags
+# -Wl,--gc-sections pairs with the -ffunction-sections -fdata-sections above: without
+# it those two flags only split the object into sections and nothing ever collects them.
+# Worth ~9 KB on a Blink-sized sketch as measured in 1.0.1 (11904->2564 on 32MP102,
+# 12876->3196 on 256MC005) -- far more than the ~2.4 KB once estimated, because
+# --whole-archive pulls the entire core in and collection then discards whatever the
+# sketch never called. It is also what _build/allboards.sh:60 has always linked with,
+# so the core has been built this way in the regression gate since the beginning.
+# Safe for interrupts: the ISRs are referenced by the interrupt vector table, so they are
+# GC roots and are never collected. Do not add -Wl,--print-gc-sections here; it is
+# per-build noise. See PLAN.md Phase 10 for the per-device size tables.
+#
+# The linker script is reached through {build.ldscript.dir}/{build.ldscript},
+# both set per board in boards.txt, so the serial bootloader can redirect the
+# link without touching this line. Every board sets them to the DFP's stock
+# script for its own device -- the exact path this line used to hardcode -- so a
+# board built with Bootloader: "none" links byte-for-byte as it did before. This
+# is also what finally gives the four *.build.ldscript= keys a meaning: until
+# now they were decorative, because this line ignored them.
+compiler.ld.flags=-mcpu={build.mcu} -mdfp={build.dfp.path} -T {build.ldscript.dir}/{build.ldscript} -Wl,--gc-sections
+compiler.ld.extra_flags=
+
+# ============================================================
+# Compile Patterns
+# ============================================================
+
+# C source files (.c)
+recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} {compiler.c.extra_flags} {build.extra_flags} {compiler.warning_flags} {includes} "{source_file}" -o "{object_file}"
+
+# C++ / .ino files - real C++: classes, templates, overloading.
+# If xc-dsc-g++.exe is missing, the fix is to install XC-DSC v4.00+, not to point
+# this at xc-dsc-gcc. The core is C++ source; compiling it as C does not build.
+recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} {compiler.cpp.extra_flags} {build.extra_flags} {compiler.warning_flags} {includes} "{source_file}" -o "{object_file}"
+
+# Assembly files (.s, .S)
+recipe.S.o.pattern="{compiler.path}{compiler.asm.cmd}" {compiler.asm.flags} {compiler.asm.extra_flags} {build.extra_flags} {includes} "{source_file}" -o "{object_file}"
+
+# ============================================================
+# Archive (library) Pattern
+# ============================================================
+
+recipe.ar.pattern="{runtime.platform.path}/tools/suppress-stderr.bat" "{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
+
+# ============================================================
+# Link Pattern
+# ============================================================
+
+recipe.c.combine.pattern="{runtime.platform.path}/tools/xc-dsc-link.bat" "{compiler.path}{compiler.ld.cmd}" {compiler.ld.flags} {compiler.ld.extra_flags} -o "{build.path}/{build.project_name}.elf" {object_files} -Wl,--whole-archive "{build.path}/{archive_file}" -Wl,--no-whole-archive -lm
+
+# ============================================================
+# Post-build: Create HEX file
+# ============================================================
+
+recipe.objcopy.hex.pattern="{runtime.platform.path}/tools/suppress-stderr.bat" "{compiler.path}{compiler.bin2hex.cmd}" -mdfp={build.dfp.path} "{build.path}/{build.project_name}.elf"
+
+# ============================================================
+# Size computation
+# ============================================================
+
+recipe.size.pattern="{runtime.platform.path}/tools/xc-dsc-size-wrapper.bat" "{build.path}/{build.project_name}.elf"
+recipe.size.regex=^(?:\.text|\.data|\.rodata)\s+([0-9]+).*
+recipe.size.regex.data=^(?:\.data|\.bss|\.noinit)\s+([0-9]+).*
+
+# ============================================================
+# Pre-processing (for Arduino IDE .ino handling)
+# ============================================================
+
+# Arduino IDE needs these for .ino preprocessing (dependency scan only, no ABI concern)
+preproc.includes.flags=-mcpu={build.mcu} -mdfp={build.dfp.path} -D__prog__="" -DF_CPU={build.f_cpu} -DFCY={build.fcy} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_DSPIC33
+recipe.preproc.includes="{compiler.path}xc-dsc-gcc.bat" -M -MG {preproc.includes.flags} {includes} -x c "{source_file}"
+recipe.preproc.macros="{compiler.path}xc-dsc-gcc.bat" -E -dM {preproc.includes.flags} {includes} -x c "{source_file}" -o "{preprocessed_file_path}"
+
+# ============================================================
+# Upload Tools
+# ============================================================
+
+# Every tool below defines BOTH an upload.pattern and a program.pattern, and they are
+# deliberately identical. The two are reached by different menu items and arduino-cli
+# picks between them by which one you invoked, not by the board:
+#
+#   Sketch > Upload                  -> boards.txt <board>.upload.tool -> upload.pattern
+#   Sketch > Upload Using Programmer -> programmers.txt <prog>.program.tool
+#                                       -> program.pattern
+#
+# 1.0.0 shipped the upload half only, so every entry on the Programmer menu failed with
+# "Failed programming: recipe not found 'program.pattern'" even though programmers.txt
+# named a program.tool for all six. Fixed in 1.0.1. There is no separate "program"
+# operation for these devices - ipecmd does a full erase-and-program either way - so the
+# recipes stay mirrored on purpose; if you edit one, edit its twin.
+
+# Tool: serial bootloader (dspic33ck256mc005 only)
+#
+# Replaces the dspic33ck_upload tool that 1.0.0 through 1.0.2 shipped, which
+# invoked tools/upload_uart.py -- a script that implemented a protocol no
+# firmware ever spoke, hardcoded 32 KB-device flash geometry, and indexed the
+# Intel HEX bytewise as if there were no phantom byte. It could not work and has
+# been deleted. This tool talks to the bootloader in
+# bootloaders/dspic33ck256mc005/, and the name is different so an old
+# boards.txt cannot accidentally reach the old behaviour.
+#
+# No --baud: 115200 is the only rate the bootloader can speak (it runs on the
+# reset-default 4 MIPS FRC and reaches 115200 only through the fractional baud
+# generator), so offering the choice would only offer a way to get it wrong.
+# {upload.speed} stays in boards.txt for the Serial Monitor's benefit.
+tools.dspic33ck_serial.cmd=python3
+tools.dspic33ck_serial.cmd.windows=python.exe
+tools.dspic33ck_serial.path={runtime.platform.path}/tools
+tools.dspic33ck_serial.upload.params.verbose=--verbose
+tools.dspic33ck_serial.upload.params.quiet=--quiet
+tools.dspic33ck_serial.upload.pattern="{cmd}" "{path}/serial_upload.py" {upload.verbose} --port "{serial.port}" --hex "{build.path}/{build.project_name}.hex"
+tools.dspic33ck_serial.program.params.verbose=--verbose
+tools.dspic33ck_serial.program.params.quiet=--quiet
+tools.dspic33ck_serial.program.pattern="{cmd}" "{path}/serial_upload.py" {program.verbose} --port "{serial.port}" --hex "{build.path}/{build.project_name}.hex"
+
+# --- ipecmd-based programmers ----------------------------------------------
+# All five go through tools/ipecmd-upload.bat, which locates ipecmd.exe inside
+# whichever MPLAB X is installed (tools/xc-dsc-find.bat) and then programs. So
+# none of them has a tools.<x>.path: MPLAB X is a user-installed prerequisite,
+# not something this platform can ship, and its version is not predictable.
+#
+#   ipecmd-upload.bat <TP-code> <device> <hexfile>
+#
+# The <TP-code> values are ipecmd's own -TP short names; see the MPLAB X doc
+# "Readme for IPECMD". The wrapper also handles the nEDBG USB-CDC wedge.
+#
+# TODO(non-Windows): these need .linux/.macosx siblings driving a shell port of
+# xc-dsc-find.bat. Windows-only is the platform's declared scope for now (it is
+# stated in package_microchip_dspic33ck_index.json), so a single unsuffixed
+# pattern is deliberate - a missing .sh would fail obscurely instead.
+
+# Every programmer below also carries erase+bootloader recipes, so Tools > Burn
+# Bootloader works with whichever one is selected. The nEDBG is NOT the interesting
+# case here: the whole point of the serial bootloader is a board with no on-board
+# debugger, and that board is burned once over ICSP with a PICkit or a SNAP. For a
+# while only nedbg had these keys, which meant Burn Bootloader failed with
+# "recipe not found 'erase.pattern'" for exactly the audience the feature exists
+# for. See the nedbg block below for why erase.pattern is wired to a real -E.
+
+# Tool: PICkit 4 via MPLAB IPE command line
+tools.pickit4.upload.params.verbose=
+tools.pickit4.upload.params.quiet=
+tools.pickit4.upload.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PK4 {build.mcu} "{build.path}/{build.project_name}.hex"
+tools.pickit4.program.params.verbose=
+tools.pickit4.program.params.quiet=
+tools.pickit4.program.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PK4 {build.mcu} "{build.path}/{build.project_name}.hex"
+tools.pickit4.erase.params.verbose=
+tools.pickit4.erase.params.quiet=
+tools.pickit4.erase.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PK4 {build.mcu} --erase
+tools.pickit4.bootloader.params.verbose=
+tools.pickit4.bootloader.params.quiet=
+tools.pickit4.bootloader.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PK4 {build.mcu} "{runtime.platform.path}/bootloaders/{bootloader.file}"
+
+# Tool: MPLAB SNAP
+tools.snap.upload.params.verbose=
+tools.snap.upload.params.quiet=
+tools.snap.upload.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" SNAP {build.mcu} "{build.path}/{build.project_name}.hex"
+tools.snap.program.params.verbose=
+tools.snap.program.params.quiet=
+tools.snap.program.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" SNAP {build.mcu} "{build.path}/{build.project_name}.hex"
+tools.snap.erase.params.verbose=
+tools.snap.erase.params.quiet=
+tools.snap.erase.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" SNAP {build.mcu} --erase
+tools.snap.bootloader.params.verbose=
+tools.snap.bootloader.params.quiet=
+tools.snap.bootloader.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" SNAP {build.mcu} "{runtime.platform.path}/bootloaders/{bootloader.file}"
+
+# Tool: PICkit 5 via MPLAB IPE command line
+tools.pickit5.upload.params.verbose=
+tools.pickit5.upload.params.quiet=
+tools.pickit5.upload.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PK5 {build.mcu} "{build.path}/{build.project_name}.hex"
+tools.pickit5.program.params.verbose=
+tools.pickit5.program.params.quiet=
+tools.pickit5.program.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PK5 {build.mcu} "{build.path}/{build.project_name}.hex"
+tools.pickit5.erase.params.verbose=
+tools.pickit5.erase.params.quiet=
+tools.pickit5.erase.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PK5 {build.mcu} --erase
+tools.pickit5.bootloader.params.verbose=
+tools.pickit5.bootloader.params.quiet=
+tools.pickit5.bootloader.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PK5 {build.mcu} "{runtime.platform.path}/bootloaders/{bootloader.file}"
+
+# Tool: PKOB4 (PICkit On Board 4 - built into Curiosity boards)
+tools.pkob4.upload.params.verbose=
+tools.pkob4.upload.params.quiet=
+tools.pkob4.upload.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PKOB4 {build.mcu} "{build.path}/{build.project_name}.hex"
+tools.pkob4.program.params.verbose=
+tools.pkob4.program.params.quiet=
+tools.pkob4.program.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PKOB4 {build.mcu} "{build.path}/{build.project_name}.hex"
+tools.pkob4.erase.params.verbose=
+tools.pkob4.erase.params.quiet=
+tools.pkob4.erase.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PKOB4 {build.mcu} --erase
+tools.pkob4.bootloader.params.verbose=
+tools.pkob4.bootloader.params.quiet=
+tools.pkob4.bootloader.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" PKOB4 {build.mcu} "{runtime.platform.path}/bootloaders/{bootloader.file}"
+
+# Tool: nEDBG (on-board debugger on Curiosity Nano boards, e.g. EV08P02A)
+# Programming through ipecmd wedges the nEDBG's USB-CDC bridge, leaving the
+# Serial Monitor silent until "pymcuprog reboot-debugger" runs. ipecmd-upload.bat
+# does that automatically for this one TP code - and only after a successful
+# program, so a real failure is never buried under the reboot output.
+tools.nedbg.upload.params.verbose=
+tools.nedbg.upload.params.quiet=
+tools.nedbg.upload.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" nEDBG {build.mcu} "{build.path}/{build.project_name}.hex"
+tools.nedbg.program.params.verbose=
+tools.nedbg.program.params.quiet=
+tools.nedbg.program.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" nEDBG {build.mcu} "{build.path}/{build.project_name}.hex"
+#
+# Tools > Burn Bootloader. The HEX is prebuilt and shipped in the package: it is
+# linked against a generated script (ldscripts/p33CK256MC005-boot.gld) that the
+# Arduino build system has no way to invoke, so users cannot build it themselves.
+# {bootloader.file} comes from boards.txt, which is also the only board that sets
+# it -- on the other three this menu item has nothing to burn.
+#
+# Note what this does to a board that already has the bootloader AND a sketch:
+# ipecmd erases the whole device, so the bootloader is replaced and the sketch is
+# gone. The same is true in reverse -- programming a sketch with the debugger
+# erases the bootloader, and serial upload stops working until it is burned
+# again. That is documented in docs/part5_upload_troubleshooting.html.
+#
+# Burn Bootloader runs TWO recipes, erase.pattern then bootloader.pattern, and
+# refuses to start at all if either key is missing -- "Failed chip erase: recipe
+# not found 'erase.pattern'" before it touches the board. ipecmd's -M erases the
+# whole device anyway, so the erase pass is redundant; it is still wired to a real
+# -E rather than to a no-op, so that a failed burn leaves a blank device instead of
+# one that was silently never erased.
+tools.nedbg.erase.params.verbose=
+tools.nedbg.erase.params.quiet=
+tools.nedbg.erase.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" nEDBG {build.mcu} --erase
+tools.nedbg.bootloader.params.verbose=
+tools.nedbg.bootloader.params.quiet=
+tools.nedbg.bootloader.pattern="{runtime.platform.path}/tools/ipecmd-upload.bat" nEDBG {build.mcu} "{runtime.platform.path}/bootloaders/{bootloader.file}"

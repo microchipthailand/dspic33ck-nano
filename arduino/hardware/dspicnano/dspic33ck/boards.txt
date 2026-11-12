@@ -1,0 +1,89 @@
+# ============================================================
+# dsPIC33CK Nano - Arduino board definition
+#
+# Custom breadboard board (31.4 x 74.5 mm, red, rounded corners):
+#   MCU   dsPIC33CK256MC005-I/PT, internal FRC (+PLL), no crystal
+#   Power USB-C 5 V -> B5819W -> MCP1703A 3.3 V LDO
+#   J2/J3 2 x 22-pin 2.54 mm headers, 0.9" apart
+#   J4    6-pin ICSP (PICkit / SNAP), PGD3/PGC3 = RB5/RB6
+#   J5    4-pin UART (3V3, TX=RC10, RX=RC11, GND) -> USB-serial adapter
+#   LED   USER LED on RC13 (D34), active low   - PWR LED is hard-wired
+#   SW1   RESET (MCLR)    SW2 USER on RC12 (D33), external 10k pull-up
+#
+# Derived from Arduino_dsPIC33CK 1.0.6 (EV08P02A Curiosity Nano). Same silicon,
+# so the core, the D0-D38 numbering and the bootloader protocol are unchanged;
+# only the board wiring differs. See variants/dspic33ck_nano/pins_arduino.h.
+# ============================================================
+
+menu.clock=Clock
+menu.debugger=Debugger
+menu.bootloader=Bootloader
+
+dspic33ck_nano.name=dsPIC33CK Nano (dsPIC33CK256MC005)
+
+# Upload defaults: an external debugger on J4. The Debugger menu below picks which.
+dspic33ck_nano.upload.tool=pickit5
+dspic33ck_nano.upload.tool.default=pickit5
+dspic33ck_nano.upload.protocol=icsp
+dspic33ck_nano.upload.maximum_size=262144
+dspic33ck_nano.upload.maximum_data_size=16384
+dspic33ck_nano.upload.speed=115200
+
+# Build configuration (MC device family pack)
+dspic33ck_nano.build.mcu=33CK256MC005
+dspic33ck_nano.build.dfp.path={build.dfp.path.mc}
+dspic33ck_nano.build.f_cpu=8000000UL
+dspic33ck_nano.build.fcy=4000000UL
+dspic33ck_nano.build.board=DSPIC33CK_NANO
+dspic33ck_nano.build.core=arduino
+dspic33ck_nano.build.variant=dspic33ck_nano
+dspic33ck_nano.build.ldscript=p33CK256MC005.gld
+dspic33ck_nano.build.ldscript.dir={build.dfp.path}/support/dsPIC33C/gld
+
+# ---------------- Clock ----------------
+dspic33ck_nano.menu.clock.200mhz_pll=100 MIPS (FRC + PLL, FOSC 200 MHz)
+dspic33ck_nano.menu.clock.200mhz_pll.build.f_cpu=200000000UL
+dspic33ck_nano.menu.clock.200mhz_pll.build.fcy=100000000UL
+
+dspic33ck_nano.menu.clock.8mhz_internal=4 MIPS (FRC 8 MHz, low power)
+dspic33ck_nano.menu.clock.8mhz_internal.build.f_cpu=8000000UL
+dspic33ck_nano.menu.clock.8mhz_internal.build.fcy=4000000UL
+
+# ---------------- Debugger (used when Bootloader = None) ----------------
+# Declared BEFORE the Bootloader menu so that Bootloader=Serial, which also sets
+# upload.tool, is applied last and wins. Verified with
+# `arduino-cli compile --show-properties`.
+dspic33ck_nano.menu.debugger.pickit5=PICkit 5 on J4
+dspic33ck_nano.menu.debugger.pickit5.upload.tool=pickit5
+dspic33ck_nano.menu.debugger.pickit5.upload.tool.default=pickit5
+dspic33ck_nano.menu.debugger.pickit5.bootloader.tool=pickit5
+
+dspic33ck_nano.menu.debugger.pickit4=PICkit 4 on J4
+dspic33ck_nano.menu.debugger.pickit4.upload.tool=pickit4
+dspic33ck_nano.menu.debugger.pickit4.upload.tool.default=pickit4
+dspic33ck_nano.menu.debugger.pickit4.bootloader.tool=pickit4
+
+dspic33ck_nano.menu.debugger.snap=MPLAB SNAP on J4
+dspic33ck_nano.menu.debugger.snap.upload.tool=snap
+dspic33ck_nano.menu.debugger.snap.upload.tool.default=snap
+dspic33ck_nano.menu.debugger.snap.bootloader.tool=snap
+
+# ---------------- Tools > Burn Bootloader ----------------
+# Built from bootloaders/dspic33ck_nano/ for THIS board (LED RC13, USER RC12).
+# The EV08P02A image must not be used here: it would watch RD13 for its button.
+dspic33ck_nano.bootloader.tool=pickit5
+dspic33ck_nano.bootloader.file=dspic33ck_nano/bootloader-dspic33ck-nano-115200-v1.hex
+
+# ---------------- Bootloader ----------------
+dspic33ck_nano.menu.bootloader.none=None (upload with the debugger on J4)
+
+dspic33ck_nano.menu.bootloader.serial=Serial over J5 (UART 115200)
+dspic33ck_nano.menu.bootloader.serial.build.ldscript=p33CK256MC005-app.gld
+dspic33ck_nano.menu.bootloader.serial.build.ldscript.dir={runtime.platform.path}/ldscripts
+dspic33ck_nano.menu.bootloader.serial.compiler.ld.extra_flags=-Wl,--no-ivt
+dspic33ck_nano.menu.bootloader.serial.build.extra_flags=-DSERIAL_BOOTLOADER_ENTRY
+# Both upload.tool keys must be overridden (arduino-cli prefers .default).
+dspic33ck_nano.menu.bootloader.serial.upload.tool=dspic33ck_serial
+dspic33ck_nano.menu.bootloader.serial.upload.tool.default=dspic33ck_serial
+dspic33ck_nano.menu.bootloader.serial.upload.protocol=serial
+dspic33ck_nano.menu.bootloader.serial.upload.maximum_size=246784

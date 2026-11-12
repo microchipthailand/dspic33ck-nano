@@ -1,0 +1,21 @@
+* text=auto
+*.bat   text eol=crlf
+*.sh    text eol=lf
+*.hex   -text
+*.png   binary
+*.zip   binary
+*.pdf   binary
+*.gbl -diff
+*.gtl -diff
+*.gbs -diff
+*.gts -diff
+*.gbo -diff
+*.gto -diff
+*.gbp -diff
+*.gtp -diff
+*.gm1 -diff
+*.drl -diff
+*.gbr -diff
+*.gbrjob -diff
+*.kicad_pcb linguist-generated=false
+*.kicad_sch linguist-generated=false

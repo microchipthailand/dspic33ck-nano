@@ -1,0 +1,87 @@
+{
+  "packages": [
+    {
+      "name": "dspicnano",
+      "maintainer": "microchipthailand (community project; not affiliated with Arduino SA or Microchip Technology)",
+      "websiteURL": "https://github.com/microchipthailand/dspic33ck-nano",
+      "email": "microchipthailand45@gmail.com",
+      "help": {
+        "online": "https://github.com/microchipthailand/dspic33ck-nano"
+      },
+      "platforms": [
+        {
+          "name": "dsPIC33CK Nano (Windows only)",
+          "architecture": "dspic33ck",
+          "version": "1.0.0",
+          "category": "Contributed",
+          "help": {
+            "online": "https://github.com/microchipthailand/dspic33ck-nano"
+          },
+          "url": "https://github.com/microchipthailand/dspic33ck-nano/releases/download/v1.0.0/dspicnano-dspic33ck-1.0.0.zip",
+          "archiveFileName": "dspicnano-dspic33ck-1.0.0.zip",
+          "checksum": "SHA-256:6fd00887e12399363c3a889aa52196ff1e2d3f399cbfa8eab30bd9f91acf3211",
+          "size": "237378",
+          "boards": [
+            {
+              "name": "dsPIC33CK Nano (dsPIC33CK256MC005)"
+            }
+          ],
+          "toolsDependencies": [
+            {
+              "packager": "dspicnano",
+              "name": "dsPIC33CK-MC_DFP",
+              "version": "1.11.412-pruned.1"
+            },
+            {
+              "packager": "dspicnano",
+              "name": "dsPIC33CK-MP_DFP",
+              "version": "1.16.521-pruned.1"
+            }
+          ]
+        }
+      ],
+      "tools": [
+        {
+          "name": "dsPIC33CK-MC_DFP",
+          "version": "1.11.412-pruned.1",
+          "systems": [
+            {
+              "host": "i686-mingw32",
+              "url": "https://github.com/9Nicotin/Arduino_dsPIC33CK/releases/download/v1.0.6/dsPIC33CK-MC_DFP-1.11.412-pruned.1.zip",
+              "archiveFileName": "dsPIC33CK-MC_DFP-1.11.412-pruned.1.zip",
+              "size": "652421",
+              "checksum": "SHA-256:5533d058359bd7482401c8c2011a5dbd05fd4396271cad93bd4c8cc54a076651"
+            },
+            {
+              "host": "x86_64-mingw32",
+              "url": "https://github.com/9Nicotin/Arduino_dsPIC33CK/releases/download/v1.0.6/dsPIC33CK-MC_DFP-1.11.412-pruned.1.zip",
+              "archiveFileName": "dsPIC33CK-MC_DFP-1.11.412-pruned.1.zip",
+              "size": "652421",
+              "checksum": "SHA-256:5533d058359bd7482401c8c2011a5dbd05fd4396271cad93bd4c8cc54a076651"
+            }
+          ]
+        },
+        {
+          "name": "dsPIC33CK-MP_DFP",
+          "version": "1.16.521-pruned.1",
+          "systems": [
+            {
+              "host": "i686-mingw32",
+              "url": "https://github.com/9Nicotin/Arduino_dsPIC33CK/releases/download/v1.0.6/dsPIC33CK-MP_DFP-1.16.521-pruned.1.zip",
+              "archiveFileName": "dsPIC33CK-MP_DFP-1.16.521-pruned.1.zip",
+              "size": "810615",
+              "checksum": "SHA-256:6cee9c30b3027b2dd14ccd64483440a5432613e3945a7d4a820795cfd0476899"
+            },
+            {
+              "host": "x86_64-mingw32",
+              "url": "https://github.com/9Nicotin/Arduino_dsPIC33CK/releases/download/v1.0.6/dsPIC33CK-MP_DFP-1.16.521-pruned.1.zip",
+              "archiveFileName": "dsPIC33CK-MP_DFP-1.16.521-pruned.1.zip",
+              "size": "810615",
+              "checksum": "SHA-256:6cee9c30b3027b2dd14ccd64483440a5432613e3945a7d4a820795cfd0476899"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

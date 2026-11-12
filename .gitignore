@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+# KiCad local / backup files
+*.kicad_prl
+*-backups/
+*.bak
+fp-info-cache
+~*.lck
+_autosave-*
+# Arduino build output
+build/
+_build/
+*.elf
+*.map
+*.o
+# Local machine config (copy from platform.local.txt.template)
+platform.local.txt
+# Microchip reference material - not redistributable, keep out of the repo
+_ref/
+*.pdf.local
+# OS
+Thumbs.db
+.DS_Store
+dist/

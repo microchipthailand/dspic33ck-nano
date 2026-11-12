@@ -1,0 +1,24 @@
+** Drc report for dspic33ck_nano.kicad_pcb **
+** Created on 2026-11-11T10:12:50 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 0 DRC violations **
+
+** Found 0 unconnected pads **
+
+** Found 1 Footprint errors **
+[net_conflict]: Pad missing net given by schematic (unconnected-(J4-Pin_6-Pad6))
+    Local override; warning
+    @(22.0500 mm, 66.6000 mm): PTH pad 6 [<no net>] of J4
+
+** Ignored checks **
+    - Courtyards overlap
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - NPTH inside courtyard
+
+** End of Report **

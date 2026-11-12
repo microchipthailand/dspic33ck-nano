@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsPIC33CK256MC005 Nano Board — Rev A</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1d2330; --muted: #5b6475; --line: #dde2ea; --panel: #f6f8fb;
+    --accent: #1f6feb; --pcb: #2e5a3d; --warn-bg: #fff6e0; --warn-line: #e3b341;
+    --ok-bg: #e9f7ef; --ok-line: #2da44e; --code-bg: #f3f5f8;
+    --pwr: #c0392b; --gnd: #34495e; --sig: #1f6feb; --prog: #8e44ad;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11151c; --fg: #e3e8ef; --muted: #9aa4b5; --line: #2b3341; --panel: #171d26;
+      --accent: #58a6ff; --warn-bg: #2b2412; --warn-line: #b08a2e; --ok-bg: #12261a; --ok-line: #3fb950;
+      --code-bg: #1a212c; --pwr: #ff7b72; --gnd: #a5b3c6; --sig: #79c0ff; --prog: #d2a8ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 15px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  header { background: var(--pcb); color: #fff; padding: 36px 24px 28px; }
+  header .wrap { max-width: 1040px; margin: 0 auto; }
+  header h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: .2px; }
+  header p { margin: 0; opacity: .9; }
+  .chips { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25);
+          padding: 3px 10px; border-radius: 999px; font-size: 13px; }
+  nav { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); }
+  nav .wrap { max-width: 1040px; margin: 0 auto; padding: 8px 24px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 13.5px; }
+  nav a:hover { color: var(--accent); }
+  main { max-width: 1040px; margin: 0 auto; padding: 8px 24px 64px; }
+  h2 { margin: 40px 0 10px; font-size: 21px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  h3 { margin: 24px 0 8px; font-size: 16.5px; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0 18px; font-size: 14px; }
+  th, td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+  th { background: var(--panel); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  code, pre { font-family: Consolas, "Cascadia Mono", Menlo, monospace; font-size: 13px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--code-bg); padding: 14px 16px; border-radius: 8px; overflow-x: auto;
+        border: 1px solid var(--line); line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .card h3 { margin-top: 0; }
+  figure { margin: 0; text-align: center; }
+  figure img { max-width: 100%; max-height: 640px; border-radius: 8px; border: 1px solid var(--line); background: #fff; }
+  figcaption { color: var(--muted); font-size: 13px; margin-top: 6px; }
+  .note { border-left: 4px solid var(--warn-line); background: var(--warn-bg); padding: 10px 14px;
+          border-radius: 0 8px 8px 0; margin: 14px 0; }
+  .ok { border-left: 4px solid var(--ok-line); background: var(--ok-bg); padding: 10px 14px;
+        border-radius: 0 8px 8px 0; margin: 14px 0; }
+  .tag { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 0 7px; border-radius: 4px;
+         border: 1px solid currentColor; line-height: 18px; }
+  .pwr { color: var(--pwr); } .gnd { color: var(--gnd); } .sig { color: var(--sig); } .prog { color: var(--prog); }
+  .pins td:first-child, .pins th:first-child { width: 48px; text-align: center; }
+  .block { font-family: Consolas, Menlo, monospace; font-size: 13px; white-space: pre; overflow-x: auto;
+           background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; line-height: 1.45; }
+  ol li, ul li { margin: 3px 0; }
+  footer { color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); margin-top: 48px; padding-top: 12px; }
+  @media print { nav { display: none; } header { background: #fff; color: #000; border-bottom: 2px solid #000; }
+                 .chip { border-color: #999; background: none; } h2 { break-after: avoid; } figure, table { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>dsPIC33CK256MC005 Nano Board</h1>
+    <p>A breadboard-friendly development board for the Microchip dsPIC33CK256MC005 digital signal controller, powered from USB-C.</p>
+    <div class="chips">
+      <span class="chip">Rev A</span>
+      <span class="chip">31.4 × 74.5 mm</span>
+      <span class="chip">2 layers · 1.6 mm FR-4</span>
+      <span class="chip">Red mask · rounded corners</span>
+      <span class="chip">USB-C 5 V → 3.3 V</span>
+      <span class="chip">KiCad 10</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#overview">Overview</a><a href="#views">Board views</a><a href="#block">Block diagram</a>
+  <a href="#power">Power</a><a href="#mcu">MCU support</a><a href="#pinout">Pinout</a>
+  <a href="#prog">Programming</a><a href="#uart">UART</a><a href="#io">LEDs &amp; buttons</a>
+  <a href="#firmware">Firmware</a><a href="#pcb">PCB design</a><a href="#bom">BOM</a>
+  <a href="#assembly">Assembly</a><a href="#bringup">Bring-up</a><a href="#files">Files</a>
+</div></nav>
+
+<main>
+
+<h2 id="overview">1. Overview</h2>
+<p>This board breaks out every I/O pin of the <b>dsPIC33CK256MC005-I/PT</b> (48-pin TQFP, 7 × 7 mm, 0.5 mm pitch)
+to two 22-pin 2.54 mm headers. Its form factor follows Microchip's Curiosity Nano boards: a narrow stick that plugs straight into a solderless breadboard.
+It contains only what the MCU needs to run (power, decoupling, reset and programming), plus a UART header, two LEDs and two buttons.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Key features</h3>
+    <ul>
+      <li>dsPIC33CK256MC005: 100 MIPS, 256 KB flash, 24 KB RAM, motor-control PWM, 3 op-amps, 12-bit ADC</li>
+      <li>USB-C power input (power only, no USB data)</li>
+      <li>MCP1703A-3302 LDO: 3.3 V, 250 mA</li>
+      <li>Ferrite-filtered analog supply (AVDD)</li>
+      <li>6-pin ICSP header for PICkit 4/5, MPLAB Snap or ICD</li>
+      <li>4-pin UART header (3V3 / TX / RX / GND)</li>
+      <li>RESET and USER buttons, power and user LEDs</li>
+      <li>All 0805 resistors and capacitors, easy to hand-solder</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Electrical summary</h3>
+    <table>
+      <tr><th>Input</th><td>5 V via USB-C (or 5V header pin)</td></tr>
+      <tr><th>Logic level</th><td>3.3 V. <b>I/O pins are not 5 V tolerant</b> unless the datasheet marks them so</td></tr>
+      <tr><th>3.3 V budget</th><td>250 mA from the LDO, minus about 50–70 mA for the MCU at full speed</td></tr>
+      <tr><th>Clock</th><td>Internal FRC 8 MHz + PLL (no crystal fitted). RB0/RB1 are free for an external oscillator</td></tr>
+      <tr><th>Reverse-feed protection</th><td>B5819W Schottky between VBUS and the 5 V rail</td></tr>
+    </table>
+  </div>
+</div>
+
+<h2 id="views">2. Board views</h2>
+<div class="grid4">
+  <figure><img src="{{IMG_TOP}}" alt="3D render of the top side"><figcaption>Top side: components, pin labels and Microchip logo</figcaption></figure>
+  <figure><img src="{{IMG_BOT}}" alt="3D render of the bottom side"><figcaption>Bottom side: pin headers point down into the breadboard (mirrored view)</figcaption></figure>
+  <figure><img src="{{IMG_TRK_TOP}}" alt="Top copper routing"><figcaption>Top copper with the pours hidden: almost all signal routing is here</figcaption></figure>
+  <figure><img src="{{IMG_TRK_BOT}}" alt="Bottom copper routing"><figcaption>Bottom copper with the pours hidden: only short crossings, so the GND plane stays almost unbroken</figcaption></figure>
+</div>
+<div class="note"><b>Header orientation.</b> The pin headers mount on the <b>bottom</b> side with the pins pointing down, and the pin names are printed on the <b>top</b> side, so they can be read while the board is in a breadboard. Solder the headers from the top.</div>
+
+<h2 id="block">3. Block diagram</h2>
+<div class="block">USB-C (J1) ──VBUS──► D1 B5819W ──+5V──► U2 MCP1703A-3302 ──+3V3──┬──► U1 VDD (pins 18, 32, 43) + 100 nF each
+  │  CC1/CC2: 5.1 kΩ to GND (R1, R2)        │ 1 µF         1 µF + 10 µF │
+  │                                         ▼                           ├──► FB1 ferrite ──+3V3A──► U1 AVDD (pin 13)
+  └─ 5V header pin (J2-1) ◄──────────── +5V rail                        │                1 µF + 100 nF
+                                                                        ├──► J3-1, ICSP J4-2, UART J5-1
+                                                                        └──► PWR LED D2 (via R4 1 kΩ)
+
+            ┌──────────────────────── U1  dsPIC33CK256MC005-I/PT ────────────────────────┐
+  RESET ─►  │ MCLR (5) ◄─ R3 10 kΩ pull-up ◄─ R7 470 Ω ◄─ C9 100 nF + SW1                │
+  ICSP J4 ─►│ PGD3/RB5 (33), PGC3/RB6 (34)                                               │
+  UART J5 ◄►│ RC10/RP58 (40) = TX     RC11/RP59 (41) = RX                                │
+  LED D3  ◄─│ RC13 (4), active low     USER SW2 ─► RC12 (3), active low, R6 pull-up      │
+  Headers ◄►│ all remaining I/O → J2 (left) / J3 (right)                                 │
+            └────────────────────────────────────────────────────────────────────────────┘</div>
+
+<h2 id="power">4. Power supply</h2>
+<h3>USB-C input</h3>
+<p>J1 is a 6-pin power-only USB-C receptacle (GCT USB4125). <b>R1/R2 (5.1 kΩ)</b> pull CC1 and CC2 to ground, which tells the host or charger that this is a
+"sink" device. Without them, a USB-C charger supplies no power. The board asks for default USB power (500 mA from a USB 2.0 port, up to 1.5–3 A from a charger). It only needs a fraction of that.</p>
+
+<h3>Reverse-feed protection</h3>
+<p><b>D1 (B5819W Schottky)</b> sits between VBUS and the board's 5 V rail. The <code>5V</code> header pin is on the protected side, so
+5 V applied to that pin cannot flow back into a connected PC. The diode drops about 0.3–0.4 V, so the 5 V rail is about 4.6 V. That leaves plenty of headroom for the 3.3 V LDO.</p>
+
+<h3>3.3 V regulator</h3>
+<table>
+  <tr><th>Part</th><td>MCP1703A-3302E/MB (SOT-89-3)</td></tr>
+  <tr><th>Pinout (SOT-89)</th><td>1 = GND, 2 + tab = VIN, 3 = VOUT (from Microchip datasheet DS20005122, Table 3-1)</td></tr>
+  <tr><th>Input capacitor</th><td>C1 1 µF X7R</td></tr>
+  <tr><th>Output capacitors</th><td>C2 1 µF + C3 10 µF. The datasheet requires ≥ 1 µF and allows up to 22 µF ceramic. About 11 µF plus the 3×100 nF decoupling stays inside that range</td></tr>
+  <tr><th>Max output</th><td>250 mA</td></tr>
+  <tr><th>Dissipation</th><td>(4.6 V − 3.3 V) × 100 mA ≈ 0.13 W, well within SOT-89 limits</td></tr>
+</table>
+
+<h3>Analog supply</h3>
+<p>The MCU's AVDD (pin 13) powers the ADC, op-amps, comparators and DAC. It is fed through <b>FB1</b>, a 600 Ω at 100 MHz ferrite bead, and decoupled
+with <b>C7 100 nF + C8 1 µF</b>, which keeps digital switching noise out of analog measurements. AVSS (pin 14) goes straight to the ground plane.</p>
+
+<div class="note"><b>Powering from the headers:</b> you can power the board from 5 V on <code>J2-1 (5V)</code>, or from 3.3 V on <code>J3-1 (3V3)</code>, which bypasses the LDO.
+Never feed 3.3 V into the 3V3 pin while USB-C is also connected. The UART header's 3V3 pin is the same rail, so connect it only if the USB-serial adapter is meant to power the board.</div>
+
+<h2 id="mcu">5. MCU support circuitry</h2>
+<table>
+  <tr><th>Function</th><th>Parts</th><th>Notes</th></tr>
+  <tr><td>VDD decoupling</td><td>C4 (pin 18), C5 (pin 32), C6 (pin 43): 100 nF</td><td>One per VDD pin, each placed right at its pin, with its own GND via to the bottom plane</td></tr>
+  <tr><td>VCAP</td><td>none</td><td>The dsPIC33CK family has no VCAP pin, so no core-regulator capacitor is needed</td></tr>
+  <tr><td>Reset (MCLR, pin 5)</td><td>R3 10 kΩ pull-up, R7 470 Ω, C9 100 nF, SW1</td><td>R7 isolates C9 and SW1 from the pin, so the programmer can still drive the VPP/MCLR edge cleanly (Microchip's recommended circuit)</td></tr>
+  <tr><td>Clock</td><td>none fitted</td><td>Internal FRC + PLL gives the full 100 MIPS. For a crystal, use OSCI/RB0 (pin 21) and OSCO/RB1 (pin 22) from the headers</td></tr>
+</table>
+
+<h2 id="pinout">6. Header pinout</h2>
+<p>The pins are numbered from the USB-C end. The left header is <b>J2</b> and the right header is <b>J3</b> (as seen from the top). The rows are 0.9" (22.86 mm) apart.
+The order follows the chip's pins around the package, which keeps the traces short and untangled.</p>
+
+<div class="grid2">
+<table class="pins">
+  <tr><th>Pin</th><th>J2 (left)</th><th>MCU pin</th><th>Main functions</th></tr>
+  {{ROWS_J2}}
+</table>
+<table class="pins">
+  <tr><th>Pin</th><th>J3 (right)</th><th>MCU pin</th><th>Main functions</th></tr>
+  {{ROWS_J3}}
+</table>
+</div>
+<p><span class="tag pwr">PWR</span> power &nbsp; <span class="tag gnd">GND</span> ground &nbsp; <span class="tag prog">PROG</span> used by on-board circuitry or programming &nbsp; <span class="tag sig">I/O</span> general-purpose</p>
+
+<div class="note">Pins marked <span class="tag prog">PROG</span> are shared with on-board functions. <b>RB5/RB6</b> are the programming pins (PGD3/PGC3), <b>RC10/RC11</b> the UART,
+<b>RC12</b> the USER button (10 kΩ pull-up) and <b>RC13</b> the USER LED. You can still use them from the header, but take the on-board load into account.</div>
+
+<h3>Useful peripheral pins</h3>
+<table>
+  <tr><th>Peripheral</th><th>Pins</th></tr>
+  <tr><td>Motor-control PWM</td><td>PWM1H/L = RB14/RB15 · PWM2H/L = RB12/RB13 · PWM3H/L = RB10/RB11 · PWM4H = RD1</td></tr>
+  <tr><td>Op-amp 1 (current sense)</td><td>OA1OUT = RA0 · OA1IN− = RA1 · OA1IN+ = RA2</td></tr>
+  <tr><td>Op-amp 2</td><td>OA2OUT = RB2 · OA2IN− = RB3 · OA2IN+ = RB4</td></tr>
+  <tr><td>Op-amp 3</td><td>OA3OUT = RA4 · OA3IN− = RC1 · OA3IN+ = RC2</td></tr>
+  <tr><td>DAC output</td><td>DACOUT1 = RA3</td></tr>
+  <tr><td>I²C1 (fixed)</td><td>SCL1 = RB8 · SDA1 = RB9 (alternate ASCL1/ASDA1 = RC9/RC8)</td></tr>
+  <tr><td>SPI2 (fixed)</td><td>SCK2 = RC8 · SDI2 = RC9 · SDO2 = RD8</td></tr>
+  <tr><td>Remappable (PPS)</td><td>Every <code>RPxx</code> pin can carry UART, SPI1, QEI, SENT, timers, input capture and similar peripherals</td></tr>
+</table>
+
+<h2 id="prog">7. Programming and debugging (J4, ICSP)</h2>
+<p>J4 is a 6-pin 2.54 mm header in Microchip's standard ICSP order. Pin 1 is marked with a square pad and the <code>MCLR</code> label.</p>
+<table class="pins">
+  <tr><th>Pin</th><th>Signal</th><th>Connects to</th></tr>
+  <tr><td>1</td><td>MCLR / VPP</td><td>U1 pin 5</td></tr>
+  <tr><td>2</td><td>VDD (3.3 V)</td><td>+3V3 rail (the programmer senses the target voltage)</td></tr>
+  <tr><td>3</td><td>GND</td><td>Ground</td></tr>
+  <tr><td>4</td><td>PGD</td><td>PGD3 / RB5, U1 pin 33</td></tr>
+  <tr><td>5</td><td>PGC</td><td>PGC3 / RB6, U1 pin 34</td></tr>
+  <tr><td>6</td><td>—</td><td>Not connected (LVP/aux on PICkit)</td></tr>
+</table>
+<p>PGD3/PGC3 were chosen because the other two programming pairs share pins with useful peripherals: PGx1 = RB8/RB9 carries I²C1, and PGx2 = RB3/RB4 carries op-amp 2's inputs.
+<b>Your firmware must select PGx3 in its configuration bits</b> (see the firmware section). Otherwise debugging won't connect.</p>
+<div class="note">Power the board from USB-C while programming. A PICkit can also power the target from pin 2, but don't do both at once.</div>
+
+<h2 id="uart">8. UART header (J5)</h2>
+<table class="pins">
+  <tr><th>Pin</th><th>Signal</th><th>MCU</th><th>Connect to USB-serial adapter</th></tr>
+  <tr><td>1</td><td><span class="tag pwr">3V3</span></td><td>+3V3 rail</td><td>VCC, <b>only</b> if the adapter should power the board and USB-C is unplugged</td></tr>
+  <tr><td>2</td><td>TX (board output)</td><td>RC10 / RP58 (pin 40)</td><td>adapter <b>RX</b></td></tr>
+  <tr><td>3</td><td>RX (board input)</td><td>RC11 / RP59 (pin 41)</td><td>adapter <b>TX</b></td></tr>
+  <tr><td>4</td><td><span class="tag gnd">GND</span></td><td>Ground</td><td>GND (always)</td></tr>
+</table>
+<div class="note"><b>Use a 3.3 V adapter</b> (FTDI TTL-232R-3V3, CP2102 or CH340 set to 3.3 V, MCP2221A). A 5 V adapter can damage the RX pin.
+UART1 is routed to these pins with peripheral pin select (PPS) in firmware; see below.</div>
+
+<h2 id="io">9. LEDs and buttons</h2>
+<table>
+  <tr><th>Ref</th><th>Function</th><th>Connection</th><th>Logic</th></tr>
+  <tr><td>D2 (green)</td><td>Power LED</td><td>+3V3 → R4 1 kΩ → LED → GND</td><td>On whenever 3.3 V is present (about 1.3 mA)</td></tr>
+  <tr><td>D3 (yellow)</td><td>User LED</td><td>+3V3 → R5 1 kΩ → LED → RC13</td><td><b>Active low</b>: drive RC13 = 0 to light it</td></tr>
+  <tr><td>SW1</td><td>RESET</td><td>MCLR via R7/C9</td><td>Press to reset</td></tr>
+  <tr><td>SW2</td><td>USER</td><td>RC12 → GND, R6 10 kΩ pull-up</td><td><b>Active low</b>: reads 0 when pressed</td></tr>
+</table>
+
+<h2 id="firmware">10. Firmware starter (MPLAB X + XC-DSC/XC16)</h2>
+<p>A minimal program for this board: 100 MIPS from the internal oscillator, UART1 on J5 at 115200 baud, and the user LED following the button.</p>
+<pre><code>#include &lt;xc.h&gt;
+
+// ---- configuration bits ----
+#pragma config FNOSC = FRC          // start on FRC, switch to PLL in code
+#pragma config FCKSM = CSECMD       // clock switching enabled
+#pragma config ICS   = PGD3         // debugger on PGC3/PGD3 (J4) -- required!
+#pragma config JTAGEN = OFF
+#pragma config FWDTEN = ON_SW       // watchdog under software control
+
+#define FCY 100000000UL             // 100 MIPS
+
+static void clock_init(void)
+{
+    // FRC 8 MHz: FPLLO = 8 MHz * M / (N1 * N2 * N3) = 8 * 150 / (1 * 3 * 1) = 400 MHz; FCY = FPLLO/4 = 100 MHz
+    CLKDIVbits.PLLPRE = 1;
+    PLLFBDbits.PLLFBDIV = 150;
+    PLLDIVbits.POST1DIV = 3;
+    PLLDIVbits.POST2DIV = 1;
+    __builtin_write_OSCCONH(0x01);  // new oscillator: FRC + PLL
+    __builtin_write_OSCCONL(OSCCON | 0x01);
+    while (OSCCONbits.OSWEN);       // wait for switch
+    while (!OSCCONbits.LOCK);       // wait for PLL lock
+}
+
+static void pins_init(void)
+{
+    __builtin_write_RPCON(0x0000);  // unlock PPS
+    _RP58R = 1;                     // RC10/RP58 -> U1TX   (J5 pin 2)
+    _U1RXR = 59;                    // U1RX <- RC11/RP59    (J5 pin 3)
+    __builtin_write_RPCON(0x0800);  // lock PPS
+
+    _TRISC10 = 0;  _TRISC11 = 1;  _CNPUC11 = 1;   // UART: TX out, RX in with pull-up
+    _TRISC13 = 0;  _LATC13 = 1;                   // user LED off (active low)
+    _TRISC12 = 1;                                 // user button input (external pull-up)
+}
+
+static void uart1_init(unsigned long baud)
+{
+    U1MODEbits.BRGH = 0;                          // standard (16x) baud mode
+    U1BRG = (FCY / (16UL * baud)) - 1;            // assumes UART clock = FCY (default); see note below
+    U1MODEbits.UTXEN = 1;
+    U1MODEbits.URXEN = 1;
+    U1MODEbits.UARTEN = 1;
+}
+
+static void uart1_putc(char c) { while (U1STAHbits.UTXBF); U1TXREG = c; }
+static void uart1_puts(const char *s) { while (*s) uart1_putc(*s++); }
+
+int main(void)
+{
+    clock_init();
+    pins_init();
+    uart1_init(115200);
+    uart1_puts("dsPIC33CK Nano ready\r\n");
+
+    while (1) {
+        _LATC13 = _RC12;            // LED on while USER button pressed (both active low)
+    }
+}</code></pre>
+<div class="note"><b>Check these against the dsPIC33CK256MC506 family datasheet before relying on them.</b> The register and bit names
+(<code>_RP58R</code>, <code>_U1RXR</code>, <code>_TRISC10</code>, <code>_CNPUC11</code>, <code>RPINR18</code>/<code>RPOR13</code>) were confirmed in the device header
+<code>p33CK256MC005.h</code> from the installed device pack. The rest are written from memory and need checking:
+<ul>
+<li>the PPS output code (<code>U1TX = 1</code>)</li>
+<li>the <code>__builtin_write_RPCON</code> unlock/lock values</li>
+<li>whether RC10/RC11 need ANSEL turned off</li>
+<li>the PLL divider values</li>
+<li>the UART baud formula, which depends on the UART clock source (<code>U1MODEH.BCLKSEL</code>)</li>
+</ul>
+Alternatively, use <b>MCC (MPLAB Code Configurator)</b>, which generates verified setup code for the clock, PPS and UART.</div>
+
+<h2 id="pcb">11. PCB design</h2>
+<table>
+  <tr><th>Item</th><th>Value</th></tr>
+  <tr><td>Size</td><td>31.4 × 74.5 mm (header rows 0.9" apart, with a 3 mm label strip outside each row)</td></tr>
+  <tr><td>Board outline</td><td>Rectangle with 2.0 mm radius rounded corners (all four)</td></tr>
+  <tr><td>Stack-up</td><td>2 layers, 1.6 mm FR-4, 1 oz copper</td></tr>
+  <tr><td>Finish</td><td>Red solder mask (both sides), white silkscreen, HASL lead-free</td></tr>
+  <tr><td>Logo</td><td>Microchip logo on top silkscreen, right of the USB-C connector (about 8.6 × 4.5 mm)</td></tr>
+  <tr><td>Top layer (F.Cu)</td><td>All components and most signal routing (about 89% of track length), plus a GND pour</td></tr>
+  <tr><td>Bottom layer (B.Cu)</td><td>Solid GND plane with only short signal crossings; pin headers are mounted on this side</td></tr>
+  <tr><td>Signal tracks</td><td>0.20 mm width, 0.20 mm clearance</td></tr>
+  <tr><td>Power tracks (VBUS, +5V, +3V3, +3V3A, GND)</td><td>0.40 mm width, 0.15 mm clearance</td></tr>
+  <tr><td>Vias</td><td>0.6 mm / 0.3 mm drill (signal), 0.8 mm / 0.4 mm drill (power)</td></tr>
+  <tr><td>Copper to board edge</td><td>0.30 mm</td></tr>
+  <tr><td>Fabrication class</td><td>Within JLCPCB / PCBWay standard 2-layer capability (no extra-cost options)</td></tr>
+</table>
+
+<h3>Grounding approach</h3>
+<ul>
+  <li>Every GND pad has its own short trace and via to the bottom plane. That includes all four MCU ground pins (14, 19, 31, 42), whose vias sit under the chip body.</li>
+  <li>The router was set to make bottom-layer traces 8× more costly than top-layer ones, so the plane stays almost unbroken under the MCU.</li>
+  <li>Stitching vias tie the top-side GND pour to the bottom plane across the whole board, and pour fragments that don't reach a GND pad are removed.</li>
+  <li>A connectivity check confirmed that all 135 GND items (pads, tracks, vias and pour pieces) form one single connected net.</li>
+</ul>
+
+<h3>Verification results</h3>
+<div class="ok">
+<b>Schematic ERC:</b> 0 errors, 0 warnings.<br>
+<b>Netlist check:</b> 156 of 156 pins match the design specification.<br>
+<b>PCB DRC:</b> 0 errors, 0 unconnected items, with KiCad's schematic-parity check on.
+The only remaining note is ICSP J4 pin 6, which is unconnected on purpose.<br>
+<b>GND connectivity:</b> a single connected group across both layers.
+</div>
+
+<h2 id="bom">12. Bill of materials</h2>
+<table>
+  <tr><th>Ref</th><th>Qty</th><th>Value</th><th>Package</th><th>Description / part</th></tr>
+  {{BOM_ROWS}}
+</table>
+<div class="note">Several entries in the "part" column are generic descriptions, such as "0805 100nF 16V X7R". Choose a specific manufacturer part
+(for example from JLCPCB's basic parts library) before ordering assembly. For the LEDs, check the cathode mark: KiCad pin 1 = K (cathode).</div>
+
+<h2 id="assembly">13. Assembly notes</h2>
+<ol>
+  <li><b>Order of soldering:</b> start with U1 (TQFP-48), then U2, the USB-C connector J1, the passives, the LEDs and the buttons. Fit the pin headers last.</li>
+  <li><b>TQFP-48:</b> tack two opposite corner pins, check the alignment on all four sides, then drag-solder with plenty of flux and clear bridges with wick.
+      Pin 1 is marked by the triangle on the silkscreen.</li>
+  <li><b>LED polarity:</b> the cathode goes to the pad marked on the silkscreen. D2's cathode goes to GND; D3's cathode goes to RC13.</li>
+  <li><b>D1 polarity:</b> the cathode band faces the LDO (+5V side).</li>
+  <li><b>Pin headers:</b> insert them from the <b>bottom</b> with the long pins pointing down, and solder from the top. To keep them straight, push the headers into a breadboard first, lay the board on top and then solder.</li>
+  <li>Clean the flux off, especially around the TQFP and MCLR network. Leftover flux can leak current on high-impedance nodes.</li>
+</ol>
+
+<h2 id="bringup">14. Bring-up checklist</h2>
+<ol>
+  <li><b>Before applying power:</b> check for shorts with a meter. 5V to GND, 3V3 to GND and 3V3A to GND should each read high resistance, not 0 Ω.</li>
+  <li>Plug in USB-C: the green PWR LED should light up. Measure the 3V3 pin: 3.25–3.35 V. Measure the 5V pin: about 4.6 V.</li>
+  <li>Measure AVDD at C8: it should equal 3V3.</li>
+  <li>Measure MCLR (J4-1): it should be at 3.3 V, and drop to 0 V while RESET is held.</li>
+  <li>Connect a PICkit to J4 (pin 1 = MCLR). In MPLAB X, choose <i>Read Device ID</i>; it should identify the dsPIC33CK256MC005.</li>
+  <li>Program the starter firmware. Open a terminal at 115200 8N1 on the UART adapter and look for "dsPIC33CK Nano ready". Press USER and the yellow LED should light.</li>
+</ol>
+
+<h2 id="files">15. Project files</h2>
+<table>
+  <tr><th>File</th><th>Contents</th></tr>
+  <tr><td><code>dspic33ck_nano.kicad_pro</code></td><td>KiCad project (open this). Contains the design rules and net classes</td></tr>
+  <tr><td><code>dspic33ck_nano.kicad_sch</code></td><td>Schematic</td></tr>
+  <tr><td><code>dspic33ck_nano.kicad_pcb</code></td><td>Routed PCB</td></tr>
+  <tr><td><code>Board.kicad_sym</code></td><td>Project symbols: the dsPIC33CK256MC005 (pinout from Microchip's device file) and the MCP1703A in SOT-89</td></tr>
+  <tr><td><code>schematic.pdf</code> · <code>bom.csv</code></td><td>Exports</td></tr>
+  <tr><td><code>pcb/scripts/</code></td><td>Generators: <code>design.py</code> (parts and nets) and <code>build.sh</code>, plus the routing scripts</td></tr>
+</table>
+
+<footer>
+  Generated {{DATE}} · dsPIC33CK256MC005 Nano board Rev A · KiCad 10.0.7 · routed with Freerouting 2.5.0.<br>
+  The MCU pinout comes from Microchip's <code>DSPIC33CK256MC005.PIC</code> device file (dsPIC33CK-MC_DFP 1.10.386); the regulator data from MCP1703A datasheet DS20005122.
+</footer>
+</main>
+</body>
+</html>

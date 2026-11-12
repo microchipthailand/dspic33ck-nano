@@ -1,0 +1,24 @@
+Refs,Value,Footprint,MPN,Qty,Cost/pcUSD,,Total/USD
+"C1,C2,C8",1uF,Capacitor_SMD:C_0805_2012Metric,0805 1uF 16V X7R,3,0.01,0.33,0.03
+C3,10uF,Capacitor_SMD:C_0805_2012Metric,0805 10uF 10V X5R,1,0.01,0.33,0.01
+"C4-C7,C9",100nF,Capacitor_SMD:C_0805_2012Metric,0805 100nF 16V X7R,5,0.05,1.65,0.25
+D1,B5819W,Diode_SMD:D_SOD-123,B5819W,1,0.05,1.65,0.05
+D2,PWR green,LED_SMD:LED_0603_1608Metric,0603 green LED,1,0.02,0.66,0.02
+D3,USER yellow,LED_SMD:LED_0603_1608Metric,0603 yellow LED,1,0.02,0.66,0.02
+FB1,600R@100MHz,Inductor_SMD:L_0603_1608Metric,BLM18AG601SN1D,1,0.02,0.66,0.02
+J1,USB-C power,Connector_USB:USB_C_Receptacle_GCT_USB4125-xx-x-0190_6P_TopMnt_Horizontal,GCT USB4125-GF-A,1,0.05,1.65,0.05
+J2,LEFT,Connector_PinHeader_2.54mm:PinHeader_1x22_P2.54mm_Vertical,1x22 2.54mm header,1,,0,
+J3,RIGHT,Connector_PinHeader_2.54mm:PinHeader_1x22_P2.54mm_Vertical,1x22 2.54mm header,1,,0,
+J4,ICSP,Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical,1x6 2.54mm header (PICkit),1,,0,
+J5,UART,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical,1x4 2.54mm header (UART),1,,0,
+"R1,R2",5.1k,Resistor_SMD:R_0805_2012Metric,0805 5.1k 1%,2,0.01,0.33,0.02
+"R3,R6",10k,Resistor_SMD:R_0805_2012Metric,0805 10k 1%,2,0.01,0.33,0.02
+"R4,R5",1k,Resistor_SMD:R_0805_2012Metric,0805 1k 1%,2,0.01,0.33,0.02
+R7,470,Resistor_SMD:R_0805_2012Metric,0805 470R 1%,1,0.01,0.33,0.01
+SW1,RESET,Button_Switch_SMD:SW_SPST_TL3342,E-Switch TL3342 series (4.2x3.2mm SMD tact),1,0.05,1.65,0.05
+SW2,USER,Button_Switch_SMD:SW_SPST_TL3342,E-Switch TL3342 series (4.2x3.2mm SMD tact),1,0.05,1.65,0.05
+U1,dsPIC33CK256MC005-I/PT,Package_QFP:TQFP-48_7x7mm_P0.5mm,dsPIC33CK256MC005-I/PT,1,0.75,24.75,0.75
+U2,MCP1703A-3302E/MB,Package_TO_SOT_SMD:SOT-89-3,MCP1703AT-3302E/MB,1,0.25,8.25,0.25
+,,PCB,,1,0.3,9.9,0.3
+,,PCB assembly ,,1,0.3,9.9,0.3
+,,,,Grand Total  - USD,,,2.22
