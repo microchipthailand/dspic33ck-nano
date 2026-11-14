@@ -62,9 +62,17 @@ static void _spi_beginTransaction(SPISettings_t settings)
 {
     SPI1CON1Lbits.SPIEN = 0;
 
-    /* Clock divider from requested frequency */
-    uint32_t brg = (FCY / (2UL * settings.clock)) - 1;
-    if (brg > 8191) brg = 8191;
+    /* Clock divider from the requested frequency: SCK = FCY / (2 * (BRG + 1)).
+     * The division truncates, as it always did (Lab 22 relies on 3.2 MHz giving
+     * BRG = 14 = 3.333 MHz at 100 MIPS). A request faster than FCY / 2 now
+     * gives BRG = 0 (the fastest clock) instead of underflowing to 0xFFFFFFFF,
+     * which the clamp turned into the SLOWEST clock. clock = 0: slowest. */
+    uint32_t brg = 8191;
+    if (settings.clock > 0) {
+        uint32_t div = FCY / (2UL * settings.clock);    /* = BRG + 1 */
+        brg = div > 0 ? div - 1UL : 0;
+        if (brg > 8191) brg = 8191;
+    }
     SPI1BRGL = (uint16_t)brg;
 
     /* Data mode (CPOL/CPHA) */
@@ -120,7 +128,7 @@ static void _spi_setBitOrder(uint8_t bitOrder)
 static void _spi_setClockDivider(uint8_t divider)
 {
     SPI1CON1Lbits.SPIEN = 0;
-    uint16_t brg = (divider / 2) - 1;
+    uint16_t brg = divider < 2 ? 0 : (uint16_t)(divider / 2 - 1);   /* divider 0/1: fastest, no underflow */
     SPI1BRGL = brg;
     SPI1CON1Lbits.SPIEN = 1;
 }

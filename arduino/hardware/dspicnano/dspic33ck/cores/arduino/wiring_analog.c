@@ -141,7 +141,7 @@ static void _pps_out_clear(uint16_t rp_num)
  * Formula: PWM_PERIOD = FCY / (PRESCALER * TARGET_FREQ) - 1
  *
  * At FCY=100MHz, prescaler 1:64: period = 100e6/(64*490)-1 = 3188  -> 490.5 Hz
- * At FCY=4MHz,   prescaler 1:16: period = 4e6/(16*490)-1   = 509   -> 490.7 Hz
+ * At FCY=4MHz,   prescaler 1:4:  period = 4e6/(4*490)-1    = 2039  -> 490.2 Hz
  */
 #if (FCY > 50000000UL)
     #define PWM_PRESCALER       0b11        /* 1:64 */

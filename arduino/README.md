@@ -1,10 +1,9 @@
 # Arduino core for the dsPIC33CK Nano board
 
 Arduino support for the custom **dsPIC33CK Nano** breadboard board
-(dsPIC33CK256MC005, USB-C power, 2 × 22 pins, red PCB). It is derived from
-[Arduino_dsPIC33CK](https://github.com/9Nicotin/Arduino_dsPIC33CK) 1.0.6, which
-targets Microchip's EV08P02A Curiosity Nano. The chip and the core code are the
-same. Only the parts that depend on the board wiring are different:
+(dsPIC33CK256MC005, USB-C power, 2 × 22 pins, red PCB). It uses the same chip
+as Microchip's EV08P02A Curiosity Nano, and the pin numbering follows that
+board. Only the parts that depend on the board wiring are different:
 
 | | EV08P02A Curiosity Nano | dsPIC33CK Nano (this) |
 |---|---|---|
@@ -24,12 +23,16 @@ pin tables stay valid.
 ```
 arduino/
 ├── dsPIC33CK_Nano_Pinout.html     Arduino-style pinout + board guide (open in a browser)
-├── dsPIC33CK_Nano_Labs.html       step-by-step guide for Lab01..Lab27 (open in a browser)
+├── dsPIC33CK_Nano_Labs.html       step-by-step guide for Lab01..Lab30 (open in a browser)
+├── dsPIC33CK_Nano_Labs_TH.html    the same guide in Thai (คู่มือการทดลองภาษาไทย)
 ├── hardware/dspicnano/dspic33ck/  the Arduino platform (copy into <sketchbook>/hardware/)
 │   ├── boards.txt                 board "dsPIC33CK Nano", Clock / Debugger / Bootloader menus
 │   ├── variants/dspic33ck_nano/   pins_arduino.h + variant.c  (pin map)
 │   ├── bootloaders/dspic33ck_nano/  bootloader source, build script, prebuilt .hex
-│   └── libraries/dsPIC33CK_Nano/examples/Lab01..Lab27
+│   ├── libraries/NanoTimer/       Timer1/2/3 periodic interrupts (SCCP1-3)
+│   ├── libraries/NanoServo/       hobby servos, up to 4, from SCCP hardware
+│   ├── libraries/NanoSerial2/     second UART (Serial2), RS485 direction pin
+│   └── libraries/dsPIC33CK_Nano/examples/Lab01..Lab30
 ├── tools/gen_pinout_html.py       regenerates the pinout page (checks it against the core)
 ├── tools/gen_wiring.py            breadboard wiring diagram (SVG) for every lab, pins from the PCB netlist
 └── tools/embed_wiring.py          puts those diagrams into dsPIC33CK_Nano_Labs.html (re-runnable)
@@ -43,12 +46,12 @@ arduino/
    `https://raw.githubusercontent.com/microchipthailand/dspic33ck-nano/main/package_dspicnano_index.json`,
    then go to *Tools → Board → Boards Manager → "dsPIC33CK Nano" → Install*. This
    also installs the device packs `dsPIC33CK-MC_DFP` / `MP_DFP` (pruned Microchip
-   DFPs hosted by the upstream Arduino_dsPIC33CK v1.0.6 release).
+   DFPs, attached to this repository's GitHub release).
    **Manual (core development):** copy `hardware/` into your sketchbook folder
    (*File → Preferences → Sketchbook location*), so the path is
    `<sketchbook>/hardware/dspicnano/dspic33ck/boards.txt`, then restart the IDE.
-   The DFP tools still have to come from a Boards Manager install (this one or
-   upstream's). Do not keep both installs at once.
+   The DFP tools still have to come from a Boards Manager install. Do not keep
+   a manual copy and a Boards Manager install at the same time.
 3. *Tools → Board → **dsPIC33CK Nano (dsPIC33CK256MC005)***.
    *Tools → Debugger →* the programmer plugged into J4.
 4. Open *File → Examples → dsPIC33CK_Nano → Lab01_Blink* and upload.
@@ -76,15 +79,15 @@ For manual entry: hold USER, tap RESET, and keep holding USER for about 1 s.
 | 09 | Lab09_SPILoopback | SPI | jumper J3-5 ↔ J3-14 |
 | | **Advanced** | | |
 | 10 | Lab10_PinChange | Change Notification on many pins (RISING/FALLING/CHANGE), rotary encoder, INT1 | buttons, encoder, jumper |
-| 11 | Lab11_Timers | Timer1, SCCP1-3 + PG4 periodic interrupts, prescalers, 32-bit mode, latency | LED/piezo optional |
+| 11 | Lab11_Timers | NanoTimer library: Timer1/2/3 begin / start / stop / setPeriod, three periodic interrupts | LED/piezo optional |
 | 12 | Lab12_UARTInterrupt | UART3 driver: RX/TX/error interrupts, ring buffers | jumper J2-14 ↔ J2-20 |
 | 13 | Lab13_SoftwareSerial | timer ISR UART (SCCP3) | jumper J2-18 ↔ J2-19 |
-| 14 | Lab14_DMA | timer → ADC → DMA ping-pong, mem copy | pot on A2 (J2-17) |
+| 14 | Lab14_DMA | all 4 DMA channels at once: ADC → RAM ping-pong, RAM copy, table → PWM duty (LED breathes), text → UART (DMA.h tab) | pot on A2 (J2-17), LED + 330R on D7 (J3-17) |
 | 15 | Lab15_DAC | 12-bit DAC on RA3, waveforms, comparator CMP1 (100 MIPS) | jumper J2-18 ↔ J2-17, pot |
 | 16 | Lab16_AdvancedPWM | PG1-PG3 complementary PWM, dead time, 3-phase sine (100 MIPS) | scope / LEDs on J2-4..J2-9 |
-| 17 | Lab17_EEPROM | EEPROM emulation in Flash, wear levelling, CRC | – |
+| 17 | Lab17_EEPROM | EEPROM emulation in Flash: EEPwrite(address, data) / EEPread, EEPput / EEPget, 256 bytes, wear levelling (FlashEEPROM.h tab) | – |
 | 18 | Lab18_PowerReset | RCON reset reasons (POR/BOR/MCLR/WDT/SW), Doze, Idle, Sleep | – |
-| 19 | Lab19_RTOS | preemptive mini-RTOS: tasks, context switch, semaphore | – |
+| 19 | Lab19_RTOS | preemptive mini-RTOS: tasks, context switch, semaphore (kernel in the MiniRTOS.h tab) | – |
 | | **Application** | | |
 | 20 | Lab20_DataLogger | everything: CSV logger + alarm | pot, LDR, buzzer |
 | 21 | Lab21_GPSLogger | Serial2 (UART2), NMEA parsing, checksum | 3.3 V GPS: TX → J2-4 |
@@ -94,14 +97,19 @@ For manual entry: hold USER, tap RESET, and keep holding USER for about 1 s.
 | 25 | Lab25_LIN | LIN master/slave, break/sync/PID/checksum on UART2 | jumper J2-5 ↔ J2-4 or LIN transceiver |
 | 26 | Lab26_CAN | CAN FD controller, 500 kbit/s, loopback + real bus (100 MIPS) | CAN transceiver on J2-22/J3-18 |
 | 27 | Lab27_10BaseT1S | 10BASE-T1S Ethernet via LAN8651 MAC-PHY (TC6 over SPI) | Two-Wire ETH Click |
+| 28 | Lab28_WatchdogClock | watchdog: WDTset(ms) / WDTclear() (Watchdog.h tab), hang finder, window mode, software reset with saved reason, oscillator switching at run time | none (scope on D9 optional) |
+| 29 | Lab29_LineFollower | line follower robot: NanoServo (SCCP servo pulses), IR array calibration, PD steering, HC-05 Bluetooth remote on Serial2 | 2 continuous servos, 5x IR array on J2-15..19, HC-05 on J2-4/5/6, 4xAA |
+| 30 | Lab30_PIDTemperature | PID temperature control: anti-windup, relay autotune, Serial Plotter, simulated heater (PID.h / Heater.h tabs) | MCP9700A on J2-15, MOSFET + 10R 5W heater on J3-21 (or none: simulated) |
 
 Labs are grouped **Basics 01-09 -> Advanced 10-19 -> Application 20-27**.
+Lab 28 belongs to Advanced, Labs 29 and 30 to Application; they were added later.
 Full step-by-step explanations, each with a breadboard wiring diagram:
 `dsPIC33CK_Nano_Labs.html`. To redraw the diagrams after a pin change:
 
 ```
 python tools/gen_wiring.py ../pcb/scripts wiring_out
 python tools/embed_wiring.py dsPIC33CK_Nano_Labs.html wiring_out/wiring.json
+python tools/embed_wiring.py dsPIC33CK_Nano_Labs_TH.html wiring_out/wiring.json
 ```
 
 (KiCad's python works; no extra packages.) Every wire names a signal. The
@@ -122,13 +130,23 @@ Keep older entries in the index if you want users to be able to downgrade.
 
 ## Verification status (2026-11-11)
 
+- C++ global objects work (since 1.0.1, 2026-11-14): the link keeps the `.ctors` table
+  (`ldscripts/keep_ctors.ld`), so XC-DSC's start-up code runs every global constructor before
+  `main()`. Before this fix `--gc-sections` discarded the table and objects such as
+  `LiquidCrystal lcd(12, 11, 5, 4, 3, 2);` stayed all-zero. Checked in the MPLAB simulator at
+  100 and 4 MIPS (test values 1234 / 567890 / 3 objects counted) and in the bootloader link;
+  all 30 labs rebuilt with unchanged sizes and 0 warnings. As on other Arduino boards, constructors
+  run before `init()`, so they must not touch hardware (do that in `begin()`).
 - The original ten labs (now 01-09 and 20) compile with 0 warnings with arduino-cli 1.5.1 and XC-DSC v4.00,
   in 3 configurations: 100 MIPS, 4 MIPS, and Serial-bootloader link.
 - Labs 21, 22, 13, 24, 14 compile at 100 MIPS and 4 MIPS (Lab22 is meant to fail at 4 MIPS:
   its `#error` asks for 100 MIPS). Lab14's DMA/ADC trigger codes come from the
   MCC device data (Microchip MCC JSON, not included). Which SCCP2 event actually triggers the ADC
   was not checked on hardware, so the sketch tries several and prints the one
-  it ended up using.
+  it ended up using. Since 2026-11-14 Lab14 uses all 4 DMA channels; the SCCP3 (LED) and
+  UART1 TX (text) triggers are unverified too and have fallbacks. The MPLAB X v6.35 simulator's
+  DMA never completes a write on this part (DBUFWF stays 1), so Lab14's DMA can only be checked
+  on hardware; the fallbacks and program flow were checked in the simulator.
 - Labs 17, 16, 12, 19, 23 compile at 100 MIPS, 4 MIPS and with the Serial bootloader
   (Lab16 is meant to fail at 4 MIPS, like Lab22). They were also run in the
   MPLAB X simulator (`mdb`):

@@ -1,5 +1,5 @@
-# dsPIC33CK Nano platform configuration (Arduino-compatible; derived from the
-# Arduino_dsPIC33CK project by 9Nicotin - see NOTICE.md at the repo root)
+# dsPIC33CK Nano platform configuration (Arduino-compatible; see NOTICE.md
+# at the repo root)
 # Integrates Microchip XC-DSC into Arduino IDE
 #
 # C++ SUPPORT: XC-DSC v4.00+ is REQUIRED. There is no C-mode fallback: both
@@ -31,7 +31,7 @@
 # platform.local.txt is still honoured as an override and always wins.
 
 name=dsPIC33CK Nano (custom board)
-version=1.0.0
+version=1.0.1
 
 # ============================================================
 # Compiler Configuration
@@ -137,7 +137,13 @@ compiler.ar.extra_flags=
 # board built with Bootloader: "none" links byte-for-byte as it did before. This
 # is also what finally gives the four *.build.ldscript= keys a meaning: until
 # now they were decorative, because this line ignored them.
-compiler.ld.flags=-mcpu={build.mcu} -mdfp={build.dfp.path} -T {build.ldscript.dir}/{build.ldscript} -Wl,--gc-sections
+#
+# "-Wl,-T,.../keep_ctors.ld" is an add-on script (INSERT, it replaces nothing) that
+# KEEPs the .ctors table. Without it, --gc-sections discarded .ctors because nothing
+# references it, so C++ global constructors never ran (objects stayed all-zero, e.g.
+# "LiquidCrystal lcd(12, 11, ...);" lost its pins). XC-DSC's crt0 already calls the
+# table (__ctor, before main) once the table is linked. See ldscripts/keep_ctors.ld.
+compiler.ld.flags=-mcpu={build.mcu} -mdfp={build.dfp.path} -T {build.ldscript.dir}/{build.ldscript} -Wl,--gc-sections "-Wl,-T,{runtime.platform.path}/ldscripts/keep_ctors.ld"
 compiler.ld.extra_flags=
 
 # ============================================================

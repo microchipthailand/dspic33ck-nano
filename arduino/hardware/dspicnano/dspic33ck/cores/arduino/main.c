@@ -26,8 +26,12 @@ int main(void)
     /* Initialize Arduino core (Timer1 for millis, etc.) */
     init();
 
-    /* C++ global constructors are called by crt0 before main().
-     * The .ctors section is preserved (no --gc-sections in linker). */
+    /* C++ global constructors have ALREADY run at this point: XC-DSC's crt0
+     * calls every entry of the .ctors table (__ctor) before main(). The link
+     * uses --gc-sections, so the table is kept by ldscripts/keep_ctors.ld
+     * (see platform.txt). As on other Arduino boards they run BEFORE
+     * system_config_init() and init(): a constructor must only store values,
+     * and leave hardware set-up to begin(). */
 
     /* Call user's setup function */
     setup();

@@ -538,9 +538,16 @@ def LABS():
         s.add('<path d="M%.1f,%.1f l0,22 l-6,10 l12,0 z" fill="#78909c" stroke="#37474f"/>' % (x, y - 18), "top")
         wire(s, [t, (x, y - 18)], "purple", optional=True)
         s.text(x + 10, y + 12, "scope probe on D6 = 1 kHz sample clock (optional)", 11, anchor="start", color="#6a1b9a", layer="top")
-    D["lab14"] = dict(title="Lab 14: potentiometer on A2 (RA2)", draw=d15,
+        # DMA channel 2 LED: D7 = RB2 -> 330R -> LED -> GND (same build as Lab 05)
+        t = L.tap("RB2")
+        c = RIGHT_FREE + 9
+        wire(s, [t, (t[0], L.bb_bottom() + 10), (L.hole(c, "j")[0], L.bb_bottom() + 10), L.hole(c, "j")], "orange")
+        resistor(s, L.hole(c, "h"), L.hole(c + 4, "h"), "330R", R330)
+        led(s, L.hole(c + 4, "f"), L.hole(c + 5, "f"), "#e53935", "LED (DMA ch2)")
+        wire(s, [L.hole(c + 5, "j"), L.rail("B-", c + 5)], "black")
+    D["lab14"] = dict(title="Lab 14: pot on A2 (RA2) + LED on D7 (RB2)", draw=d15,
                       conns=[("3V3 to + rail", "+3V3", "red", "J3"), ("GND to - rail", "GND", "black", "J3"), ("pot wiper", "RA2", "yellow", None),
-                             ("scope probe (optional)", "RB1", "purple", None)],
+                             ("D7 to 330R → LED", "RB2", "orange", None), ("scope probe (optional)", "RB1", "purple", None)],
                       notes=["aliasing test (step 7): remove the pot wiper wire and jumper D5 = J3-21 to J2-17 instead"], bottom=110)
 
     D["lab17"] = dict(title="Lab 17: nothing to wire (USB-serial on J5)", draw=d03, conns=[], notes=[J5NOTE], bottom=130)
@@ -669,11 +676,139 @@ def LABS():
         wire(s, [L.hole(c2 + 4, "j"), L.rail("B-", c2 + 4)], "black")
         t = L.tap("RB5")
         s.add('<path d="M%.1f,%.1f l-5,16 l10,0 z" fill="#78909c" stroke="#37474f"/>' % (t[0], t[1] + 3), "top")
-        tag(s, L.ox + 300, L.bb_bottom() + 40, "grey probe: SCCP2 on D10 (J3-11), 50 Hz", "#6a1b9a")
+        tag(s, L.ox + 300, L.bb_bottom() + 40, "grey probe: Timer2 on D10 (J3-11), 50 Hz", "#6a1b9a")
     D["lab11"] = dict(title="Lab 11: timers - LED on D11, piezo on D9, probe on D10", draw=d26,
-                      conns=[("SCCP1 out → piezo + (optional)", "RB4", "orange", None), ("SCCP3 out → 1k → LED +", "RB6", "green", None),
-                             ("SCCP2 out (scope probe)", "RB5", "grey", None), ("GND to - rail", "GND", "black", "J3")],
-                      notes=["no parts needed: the USER LED is blinked by the PG4 timer interrupt"], bottom=110)
+                      conns=[("Timer1 (every 1 ms) → piezo + (optional)", "RB4", "orange", None), ("Timer3 (every 100 ms) → 1k → LED +", "RB6", "green", None),
+                             ("Timer2 (every 10 ms, scope probe)", "RB5", "grey", None), ("GND to - rail", "GND", "black", "J3")],
+                      notes=["no parts needed: the Serial Monitor shows how often each timer fires"], bottom=110)
+
+    # ---------------- 28 watchdog / software reset / clock switch ----------------
+    def d28(s):
+        usb_serial(s)
+        L = s.L
+        power_rails(s, need_3v3=False)
+        # D9 = RB4 (J3-15) = reference clock output FOSC/2000 -> 1k + LED (optional) and scope probe
+        c = RIGHT_FREE + 9          # right of the USB-serial wires
+        t = L.tap("RB4")
+        wire(s, [t, (t[0], L.bb_bottom() + 10), (L.hole(c, "j")[0], L.bb_bottom() + 10), L.hole(c, "j")], "orange", optional=True)
+        resistor(s, L.hole(c, "h"), L.hole(c + 3, "h"), "1k", R1K)
+        led(s, L.hole(c + 3, "f"), L.hole(c + 4, "f"), "#43a047", "LED: 16 Hz on LPRC")
+        wire(s, [L.hole(c + 4, "j"), L.rail("B-", c + 4)], "black")
+        s.add('<path d="M%.1f,%.1f l-5,16 l10,0 z" fill="#78909c" stroke="#37474f"/>' % (t[0], t[1] + 3), "top")
+        tag(s, L.ox + 300, L.bb_bottom() + 40, "grey probe: clock output on D9 (J3-15) = FOSC / 2000", "#6a1b9a")
+    D["lab28"] = dict(title="Lab 28: USB-serial on J5, clock output on D9 (optional LED / scope)", draw=d28,
+                      conns=[("REFCLKO (FOSC / 2000) → 1k → LED + (optional)", "RB4", "orange", None), ("GND to - rail", "GND", "black", "J3")],
+                      notes=[J5NOTE, "100 kHz at 100 MIPS, 4 kHz at 4 MIPS, 2 kHz at 2 MIPS, 16 Hz on LPRC"], bottom=150)
+
+    # ---------------- 29 line follower robot: HC-05 + IR array + 2 servos ----------------
+    def pinbox(s, px, py, name, below):
+        s.add('<rect x="%.1f" y="%.1f" width="7" height="7" fill="#1b1b1b"/><rect x="%.1f" y="%.1f" width="3.5" height="3.5" fill="#ffca28"/>' % (px - 3.5, py - 3.5, px - 1.75, py - 1.75), "top")
+        s.text(px, py + (14 if below else -7), name, 7, color="#fff", weight="bold", layer="top")
+
+    def d29(s):
+        L = s.L
+        power_rails(s, need_3v3=False, need_5v=True, need_gnd=True)
+        # --- top: HC-05 (pins drawn mirrored so the wires do not cross) ---
+        x = L.ox + (COL0 - 2) * PX; y = 12
+        hc = module(s, x, y, 30 + 46 * 4, 46, "HC-05", "Bluetooth SPP, 9600", "#0d47a1", ["VCC", "GND", "TXD", "RXD", "STATE"], side="B")
+        # a wire travelling LEFT turns higher the further left its pin is
+        for k, (nm, sig, col) in enumerate((("STATE", "RB12", "purple"), ("RXD", "RB11", "yellow"), ("TXD", "RB10", "green"))):
+            ex, ey = hc[nm]; t = L.tap(sig); yy = L.bb_top() - 8 - k * 7
+            wire(s, [(ex, ey), (ex, yy), (t[0], yy), t], col, 2.6)
+        for nm, rail, col in (("VCC", "T+", "red"), ("GND", "T-", "black")):
+            ex, ey = hc[nm]; r = L.rail(rail, int(round((ex - L.ox) / PX)))
+            wire(s, [(ex, ey), (ex, r[1])], col, 2.6)
+        # --- top: 5-channel IR array on RA0..RA4 (J2-15..19) ---
+        x2 = L.ox + (COL0 + 12) * PX
+        ir = module(s, x2, y, 30 + 46 * 6, 46, "IR line sensor x5", "TCRT5000, analog OUT, VCC 3V3", "#1b5e20",
+                    ["OUT1", "OUT2", "OUT3", "OUT4", "OUT5", "GND", "VCC"], side="B")
+        for k, (nm, sig, col) in enumerate((("OUT5", "RA4", "cyan"), ("OUT4", "RA3", "blue"), ("OUT3", "RA2", "green"),
+                                            ("OUT2", "RA1", "orange"), ("OUT1", "RA0", "pink"))):
+            ex, ey = ir[nm]; t = L.tap(sig); yy = L.bb_top() - 8 - k * 6
+            wire(s, [(ex, ey), (ex, yy), (t[0], yy), t], col, 2.6)
+        ex, ey = ir["GND"]; r = L.rail("T-", int(round((ex - L.ox) / PX)))
+        wire(s, [(ex, ey), (ex, r[1])], "black", 2.6)
+        ex, ey = ir["VCC"]
+        wire(s, [(ex, ey), (ex, ey + 12)], "red", 2.6, optional=True)
+        tag(s, ex + 46, ey + 22, "VCC → 3V3 J3-1", "#d32f2f")
+        # --- bottom: servos + battery. SIG on top of each servo, + / - underneath ---
+        ym = L.bb_bottom() + 56; hm = 54
+        tR, tL = L.tap("RB1"), L.tap("RB0")                  # J3-20, J3-21
+        servos = []
+        # the "-" pin sits where no signal wire passes above it: left end of the
+        # right servo, right end of the left servo
+        for (x0, title, sig_x, mx) in ((tR[0] - 49, "RIGHT servo", tR[0], 14), (L.ox + (COL0 + 35) * PX, "LEFT servo", None, 90)):
+            module(s, x0, ym, 110, hm, title, "continuous 360°", "#37474f", [], side="T")
+            sx = sig_x if sig_x is not None else x0 + 22
+            pinbox(s, sx, ym, "SIG", True)
+            pinbox(s, x0 + mx, ym, "−", True)               # brown / black
+            pinbox(s, x0 + 70, ym + hm, "+", False)              # red, underneath
+            servos.append((x0, sx, mx))
+        # right servo: straight down from RB1;  left servo: RB0 turns above it
+        wire(s, [tR, (tR[0], ym)], "orange", 2.6)
+        yyL = L.bb_bottom() + 22
+        wire(s, [tL, (tL[0], yyL), (servos[1][1], yyL), (servos[1][1], ym)], "orange", 2.6)
+        for (x0, _, mx) in servos:                               # servo - -> bottom GND rail
+            r = L.rail("B-", int(round((x0 + mx - L.ox) / PX)))
+            wire(s, [(x0 + mx, ym), (x0 + mx, r[1])], "brown", 2.6)
+        xb = L.ox + (COL0 + 44) * PX
+        module(s, xb, ym, 120, hm, "4 x AA", "4.8 - 6 V", "#4e342e", [], side="T")
+        pinbox(s, xb + 90, ym, "−", True)
+        pinbox(s, xb + 30, ym + hm, "+", False)
+        r = L.rail("B-", int(round((xb + 90 - L.ox) / PX)))
+        wire(s, [(xb + 90, ym), (xb + 90, r[1])], "black", 2.6)
+        yb = ym + hm + 14                                         # red bus under everything
+        wire(s, [(servos[0][0] + 70, ym + hm), (servos[0][0] + 70, yb), (xb + 30, yb), (xb + 30, ym + hm)], "red", 2.8)
+        wire(s, [(servos[1][0] + 70, ym + hm), (servos[1][0] + 70, yb)], "red", 2.8)
+        right = L.ox + (COLS - 1) * PX + 16
+        tp = L.rail("T+", COLS - 1)
+        wire(s, [(xb + 30, yb), (right, yb), (right, tp[1]), tp], "red", 2.8)
+        tag(s, xb - 60, yb + 18, "battery + → servos + and top + rail (J2-1)", "#d32f2f")
+    D["lab29"] = dict(title="Lab 29: line follower - HC-05 on Serial2, IR array on A0-A4, servos on D5 / D6", draw=d29, top=110,
+                      conns=[("HC-05 TXD → Serial2 RX", "RB10", "green", None), ("HC-05 RXD ← Serial2 TX", "RB11", "yellow", None),
+                             ("HC-05 STATE (optional)", "RB12", "purple", None), ("IR OUT1 (leftmost)", "RA0", "pink", None),
+                             ("IR OUT2", "RA1", "orange", None), ("IR OUT3 (middle)", "RA2", "green", None), ("IR OUT4", "RA3", "blue", None),
+                             ("IR OUT5 (rightmost)", "RA4", "cyan", None), ("RIGHT servo signal", "RB1", "orange", None),
+                             ("LEFT servo signal", "RB0", "orange", None), ("IR array VCC (3.3 V only!)", "+3V3", "red", "J3"),
+                             ("5V pin ← battery + (and HC-05 VCC)", "+5V", "red", "J2"), ("GND", "GND", "black", "J3")],
+                      notes=["servo brown/black → GND rail, red → battery +. All grounds together. Optional piezo on D9 (J3-15).",
+                             "USB-serial on J5 for the Serial Monitor (115200) is optional once the phone works."], bottom=170)
+
+    # ---------------- 30 PID temperature: MCP9700A on A0, MOSFET heater on D5 ----------------
+    def d30(s):
+        L = s.L
+        power_rails(s, need_3v3=False, need_5v=True, need_gnd=True)
+        # top: sensor, VOUT straight above RA0 (J2-15)
+        t = L.tap("RA0")
+        w = 30 + 46 * 2
+        x = t[0] - (14 + (w - 28) / 2); y = 12
+        m = module(s, x, y, w, 46, "MCP9700A", "or TMP36, taped on the resistor", "#00695c", ["VDD", "VOUT", "GND"], side="B")
+        wire(s, [m["VOUT"], t], "yellow", 2.6)
+        r = L.rail("T-", int(round((m["GND"][0] - L.ox) / PX)))
+        wire(s, [m["GND"], (m["GND"][0], r[1])], "black", 2.6)
+        wire(s, [m["VDD"], (m["VDD"][0], m["VDD"][1] + 12)], "red", 2.6, optional=True)
+        tag(s, m["VDD"][0] - 50, m["VDD"][1] + 22, "VDD → 3V3 J3-1", "#d32f2f")
+        # bottom: heater driver. GATE straight below RB0 (J3-21), GND up to the rail, 5V underneath
+        tg = L.tap("RB0")
+        ym = L.bb_bottom() + 56; hm = 70; x0 = tg[0] - 22; wm = 170
+        module(s, x0, ym, wm, hm, "heater driver", "N-MOSFET + 10R 5W (100R gate, 10k to GND)", "#bf360c", [], side="T")
+        pinbox(s, tg[0], ym, "GATE", True)
+        pinbox(s, x0 + wm - 20, ym, "GND", True)
+        pinbox(s, x0 + wm / 2, ym + hm, "5V", False)
+        wire(s, [tg, (tg[0], ym)], "orange", 2.6)
+        r = L.rail("B-", int(round((x0 + wm - 20 - L.ox) / PX)))
+        wire(s, [(x0 + wm - 20, ym), (x0 + wm - 20, r[1])], "black", 2.6)
+        right = L.ox + (COLS - 1) * PX + 16
+        tp = L.rail("T+", COLS - 1)
+        yb = ym + hm + 14
+        wire(s, [(x0 + wm / 2, ym + hm), (x0 + wm / 2, yb), (right, yb), (right, tp[1]), tp], "red", 2.8)
+        tag(s, x0 + wm / 2 + 190, yb + 16, "5V (J2-1, via the top + rail) → 10R → drain", "#d32f2f")
+    D["lab30"] = dict(title="Lab 30: PID temperature - MCP9700A on A0, MOSFET heater on D5", draw=d30, top=110,
+                      conns=[("sensor VOUT", "RA0", "yellow", None), ("sensor VDD (3.3 V)", "+3V3", "red", "J3"),
+                             ("MOSFET gate (via 100R)", "RB0", "orange", None), ("heater resistor ← 5V", "+5V", "red", "J2"),
+                             ("GND", "GND", "black", "J3")],
+                      notes=["heater: 5V → 10R 5W → MOSFET drain, source → GND, 10k gate → GND. It gets HOT: don't touch.",
+                             "no parts? send x in the Serial Monitor: the sketch has a simulated heater."], bottom=170)
 
     # ---------------- (old 27) pin change ----------------
     def d27(s):

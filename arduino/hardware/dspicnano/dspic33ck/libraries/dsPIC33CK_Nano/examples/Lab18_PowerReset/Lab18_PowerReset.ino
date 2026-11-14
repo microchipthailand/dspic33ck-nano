@@ -158,8 +158,8 @@ void testSleep(void)
 
 void testWatchdog(void)
 {
-    Serial.println("# enabling the watchdog and NOT feeding it -> reset in ~1 ms.");
-    Serial.println("#   (period is set by config bit RWDTPS = PS1 in system_config.c)");
+    Serial.println("# enabling the watchdog and NOT feeding it -> reset in about 1 s.");
+    Serial.println("#   (period: config bit RWDTPS = PS32768 in system_config.c; Lab 28 measures it)");
     Serial.flush();
     WDTCONLbits.ON = 1;                 /* FWDTEN = ON_SW: software may switch it on */
     for (;;) { }                        /* hang - like a bug that locks up the loop */

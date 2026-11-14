@@ -18,14 +18,12 @@ PLATFORM = REPO / "arduino" / "hardware" / "dspicnano" / "dspic33ck"
 DIST = REPO / "dist"
 INDEX = REPO / "package_dspicnano_index.json"
 GH = "https://github.com/microchipthailand/dspic33ck-nano"
-UPSTREAM = "https://github.com/9Nicotin/Arduino_dsPIC33CK/releases/download/v1.0.6"
 
 SKIP_DIRS = {"__pycache__", "build", "_build"}
 SKIP_FILES = {"platform.local.txt", "Thumbs.db", ".DS_Store"}
 
-# Device packs (pruned Microchip DFPs, Apache-2.0) published by upstream
-# Arduino_dsPIC33CK v1.0.6. Declared under our own packager so users only
-# need one Boards Manager URL.
+# Device packs (pruned Microchip DFPs, Apache-2.0). Attach both zips to every
+# GitHub release next to the platform zip (copies are kept in dist/).
 TOOLS = [
     ("dsPIC33CK-MC_DFP", "1.11.412-pruned.1", 652421,
      "5533d058359bd7482401c8c2011a5dbd05fd4396271cad93bd4c8cc54a076651"),
@@ -99,7 +97,7 @@ def main():
             "name": t, "version": v,
             "systems": [{
                 "host": host,
-                "url": f"{UPSTREAM}/{t}-{v}.zip",
+                "url": f"{base}/{t}-{v}.zip",
                 "archiveFileName": f"{t}-{v}.zip",
                 "size": str(size),
                 "checksum": "SHA-256:" + sha,

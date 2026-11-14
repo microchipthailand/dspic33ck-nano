@@ -10,9 +10,8 @@
 #   LED   USER LED on RC13 (D34), active low   - PWR LED is hard-wired
 #   SW1   RESET (MCLR)    SW2 USER on RC12 (D33), external 10k pull-up
 #
-# Derived from Arduino_dsPIC33CK 1.0.6 (EV08P02A Curiosity Nano). Same silicon,
-# so the core, the D0-D38 numbering and the bootloader protocol are unchanged;
-# only the board wiring differs. See variants/dspic33ck_nano/pins_arduino.h.
+# Same silicon as the EV08P02A Curiosity Nano, so the D0-D38 numbering and the
+# bootloader protocol follow that board; only the board wiring differs. See variants/dspic33ck_nano/pins_arduino.h.
 # ============================================================
 
 menu.clock=Clock

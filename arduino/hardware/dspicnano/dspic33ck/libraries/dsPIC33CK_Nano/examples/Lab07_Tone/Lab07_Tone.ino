@@ -5,7 +5,7 @@
  * Goal:  generate audio frequencies; press USER to play the tune.
  *
  * Wiring (breadboard):
- *   Passive piezo buzzer (or 8 ohm speaker through 100 ohm): + to D9 (RB4, J3-15),
+ *   Passive piezo buzzer (or 8 ohm speaker through 330 ohm, ~10 mA): + to D9 (RB4, J3-15),
  *   - to GND.
  *
  * Note: tone() uses timer SCCP4, which is also the PWM channel of D8 (RB3).

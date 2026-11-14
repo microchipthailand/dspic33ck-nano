@@ -27,7 +27,8 @@
  *   One LED byte (8 bits) = 32 SPI bits = 4 SPI bytes.
  *   The core's SPI clock: BRG = FCY/(2*f) - 1 = 100e6/(2*3.2e6) - 1 = 14 -> 3.333 MHz.
  *   At 4 MIPS the SPI cannot reach this speed, so the sketch refuses to run.
- *   >= 50 us low after the last bit = "latch" (show the colours).
+ *   >= 50 us low after the last bit = "latch" (show the colours). Newer WS2812B
+ *   versions (V5 / 2020 datasheets) need >= 280 us, so the sketch waits 300 us.
  *   SPI.transfer() waits for each byte, so there is a short gap (a few hundred
  *   ns at 100 MIPS - estimated from the code, not scoped) between bytes. Every
  *   encoded byte ends with a 0 SPI bit, so the gap only lengthens a LOW phase,
@@ -78,7 +79,7 @@ void show(void)
     for (int j = 0; j < k; j++) SPI.transfer(buf[j]);
     interrupts();
     SPI.endTransaction();
-    delayMicroseconds(80);     /* latch */
+    delayMicroseconds(300);    /* latch */
 }
 
 /* colour wheel 0..255 -> r,g,b */
