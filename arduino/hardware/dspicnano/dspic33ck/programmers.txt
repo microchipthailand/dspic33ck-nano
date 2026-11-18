@@ -1,0 +1,36 @@
+# Programmers for the dsPIC33CK Nano board (external debugger on ICSP header J4)
+
+pickit5.name=PICkit 5
+pickit5.communication=usb
+pickit5.protocol=icsp
+pickit5.program.tool=pickit5
+pickit5.program.extra_params=
+
+pickit4.name=PICkit 4
+pickit4.communication=usb
+pickit4.protocol=icsp
+pickit4.program.tool=pickit4
+pickit4.program.extra_params=
+
+snap.name=MPLAB SNAP
+snap.communication=usb
+snap.protocol=icsp
+snap.program.tool=snap
+snap.program.extra_params=
+
+# Serial bootloader (dsPIC33CK256MC005 only).
+#
+# 1.0.0 through 1.0.2 pointed this at a tool that could not work; it now reaches
+# the real one. Two things to know before selecting it:
+#
+#   * The sketch must have been BUILT for the bootloader, i.e. with
+#     Tools > Bootloader: "Serial (UART, 115200)". A sketch linked for 0x200 will be
+#     rejected by serial_upload.py rather than written to the wrong place.
+#   * Sketch > Upload already does this when that menu option is selected, so
+#     this entry is only for using the serial path while some other programmer is
+#     the board's default.
+uart_bootloader.name=Serial Bootloader (UART)
+uart_bootloader.communication=serial
+uart_bootloader.protocol=serial
+uart_bootloader.program.tool=dspic33ck_serial
+uart_bootloader.program.extra_params=
