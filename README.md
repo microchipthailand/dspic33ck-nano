@@ -1,31 +1,57 @@
 # dsPIC33CK Nano
 
 An open-hardware breadboard board for the Microchip **dsPIC33CK256MC005**
-(100 MIPS dsPIC DSC), with an **Arduino-compatible core** and a 30-lab course.
+(100 MIPS dsPIC DSC), with an **Arduino-compatible core** and a **38-lab course**
+(30 main labs + 8 peripheral labs), in English and Thai.
+
+## 📘 Lab manuals
+
+**Start here → [microchipthailand.github.io/dspic33ck-nano](https://microchipthailand.github.io/dspic33ck-nano/)**: all manuals on one page.
+
+| Manual | English | ภาษาไทย |
+|---|---|---|
+| 🆕 **Peripheral labs 31-38**: the special hardware of the dsPIC33CK256MC005 | [**Open the peripheral labs**](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs.html) | [**เปิดคู่มือ peripheral ภาษาไทย**](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs_TH.html) |
+| **Main labs 01-30**: Basics, Advanced, Application | [**Open the lab manual**](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Labs.html) | [**เปิดคู่มือภาษาไทย**](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Labs_TH.html) |
+| **Board pinout**: every pin and Arduino function | [Pinout page](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Pinout.html) | |
+
+### 🆕 New in v1.0.2: peripheral labs 31-38
+
+| Lab | Topic | What you build |
+|---|---|---|
+| [Lab 31](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab31) | Analog comparator | CMP1 + DAC threshold, hysteresis, edge counter, a SAR ADC built from DAC + comparator |
+| [Lab 32](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab32) | Peripheral Pin Select | move a PWM and an interrupt input between pins at run time, virtual pins, IOLOCK |
+| [Lab 33](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab33) | Peripheral Trigger Generator | a step program that blinks the LED, reacts to the button and makes 1 kHz with zero CPU time |
+| [Lab 34](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab34) | CRC engine | CRC-8/16/32 self-test, speed against software, Modbus frame check, flash fingerprint |
+| [Lab 35](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab35) | Deadman Timer | instruction-count watchdog with a window: too late, too early and wrong key are caught |
+| [Lab 36](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab36) | DSP math | Q15, 40-bit accumulators, MAC, FIR benchmark, RMS, Goertzel DTMF decoder |
+| [Lab 37](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab37) | Six-channel PWM | 6 independent channels at 2.5 ns plus dithering, 6-phase interleave, breathing LEDs |
+| [Lab 38](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab38) | Advanced 12-bit ADC | all 22 channels, 6-12 bit, timer/PWM triggers, compare window, oversampling, AVDD from the band gap |
+
+Each peripheral lab keeps the hardware driver in its own `.h` tab, so the `.ino` stays short.
+In the Arduino IDE, find them under *File → Examples → dsPIC33CK_Nano_Peripherals*.
 
 <p align="center">
   <img src="docs/images/top3d.png" height="360" alt="Top view">
   <img src="docs/images/bot3d.png" height="360" alt="Bottom view">
 </p>
 
-## 📘 Lab manual
+### All labs
 
-| | |
-|---|---|
-| **Lab manual (English)** | [**Open the lab manual**](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Labs.html): 30 step-by-step labs with wiring diagrams |
-| **คู่มือการทดลอง (ภาษาไทย)** | [**เปิดคู่มือภาษาไทย**](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Labs_TH.html) |
-| **Pinout page** | [Board pinout and Arduino pin functions](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Pinout.html) |
-
-The labs go from *Basics* (Blink, Serial, ADC, PWM, I2C, SPI) through *Advanced*
+The main labs go from *Basics* (Blink, Serial, ADC, PWM, I2C, SPI) through *Advanced*
 (interrupts, timers, DMA, DAC, flash EEPROM, RTOS, watchdog) to *Application*
 (data logger, GPS, WS2812B, OLED, Modbus RS485, LIN, CAN, 10BASE-T1S, line-follower
-robot, PID temperature control). Every lab has objectives, background theory, a
+robot, PID temperature control). The *peripheral labs* 31-38 then cover the
+hardware that makes this chip special: analog comparator, Peripheral Pin Select,
+Peripheral Trigger Generator, CRC engine, Deadman Timer, DSP math, six-channel PWM
+and the full 12-bit ADC. Every lab has objectives, background theory, a
 parts list, a wiring diagram, steps, expected output, a code walk-through,
 exercises and troubleshooting.
 
 <sub>If the links above do not open, the pages are also in the repo:
 [`arduino/dsPIC33CK_Nano_Labs.html`](arduino/dsPIC33CK_Nano_Labs.html) ·
 [`arduino/dsPIC33CK_Nano_Labs_TH.html`](arduino/dsPIC33CK_Nano_Labs_TH.html) ·
+[`arduino/dsPIC33CK_Nano_Peripheral_Labs.html`](arduino/dsPIC33CK_Nano_Peripheral_Labs.html) ·
+[`arduino/dsPIC33CK_Nano_Peripheral_Labs_TH.html`](arduino/dsPIC33CK_Nano_Peripheral_Labs_TH.html) ·
 [`arduino/dsPIC33CK_Nano_Pinout.html`](arduino/dsPIC33CK_Nano_Pinout.html)
 (download, then open in a browser).</sub>
 
@@ -60,7 +86,7 @@ All I/O is 3.3 V. Full table with every pin and alternate function: [pinout page
 | Power | USB-C (power only) → MCP1703A 3.3 V LDO |
 | Board | 31.4 × 74.5 mm, 2 layers, 2 × 22-pin headers 0.9" apart (fits a breadboard) |
 | I/O | user LED RC13, user button RC12, reset button, ICSP header J4 (PICkit/SNAP), UART header J5 |
-| Software | Arduino IDE / arduino-cli platform, serial bootloader, 30 example labs |
+| Software | Arduino IDE / arduino-cli platform, serial bootloader, 38 example labs (30 + 8 peripheral labs) |
 
 > **Status:** ERC/DRC clean, Gerbers generated, all labs compile and many were
 > checked in the MPLAB simulator. **The board has not been built or tested on
@@ -71,13 +97,15 @@ All I/O is 3.3 V. Full table with every pin and alternate function: [pinout page
 ```
 arduino/                       Arduino-compatible platform + labs + docs
   hardware/dspicnano/dspic33ck/  copy this into <sketchbook>/hardware/
-  dsPIC33CK_Nano_Labs.html       step-by-step lab guide with wiring diagrams
+  dsPIC33CK_Nano_Labs.html       step-by-step lab guide with wiring diagrams (Labs 01-30)
+  dsPIC33CK_Nano_Peripheral_Labs.html  peripheral lab guide (Labs 31-38), _TH = Thai
   dsPIC33CK_Nano_Pinout.html     pinout page
   tools/                         doc / wiring-diagram generators and checks
 pcb/
   kicad/                         KiCad 10 project (schematic, routed PCB, BOM, reports)
   scripts/                       Python generators (design.py = parts and nets)
   fabrication/                   Gerbers + drill (zip ready for the fab), BOM, pick-and-place, PDFs
+bootloader-host/                Windows GUI + CLI to program MPLAB X / VS Code builds over the J5 serial bootloader
 docs/images/                   renders and pinout image used in this README
 LICENSE  NOTICE.md  LICENSES/  licensing and third-party notices
 ```
@@ -99,6 +127,15 @@ LICENSE  NOTICE.md  LICENSES/  licensing and third-party notices
    *File → Examples → dsPIC33CK_Nano → Lab01_Blink* and upload it over a PICkit on J4.
 
 More detail: [`arduino/README.md`](arduino/README.md) and the [lab manual](https://microchipthailand.github.io/dspic33ck-nano/arduino/dsPIC33CK_Nano_Labs.html).
+
+## MPLAB X / VS Code (no Arduino)
+
+[`bootloader-host/`](bootloader-host/README.md) lets you program applications built in
+**MPLAB X** or **VS Code** (XC-DSC) through the same serial bootloader on **J5**, with no PICkit after
+the first bootloader burn. It has a Windows GUI (`NanoBootloader.exe`) and a command-line tool
+(`nanobl.exe`) for the MPLAB X post-build step and VS Code tasks. It also has the app linker script,
+a soft-entry helper and the ready template project `examples/NanoBlink_BL.X`. Nothing has to be installed: it
+runs on the .NET Framework that comes with Windows.
 
 ## Ordering the PCB
 

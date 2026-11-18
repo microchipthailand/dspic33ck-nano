@@ -24,6 +24,9 @@ pin tables stay valid.
 arduino/
 ├── dsPIC33CK_Nano_Pinout.html     Arduino-style pinout + board guide (open in a browser)
 ├── dsPIC33CK_Nano_Labs.html       step-by-step guide for Lab01..Lab30 (open in a browser)
+├── dsPIC33CK_Nano_Peripheral_Labs.html  step-by-step guide for the peripheral labs Lab31..Lab38
+├── dsPIC33CK_Nano_Peripheral_Labs_TH.html  the same guide in Thai
+├── tools/gen_wiring_periph.py     wiring diagrams for Lab31..Lab38 (uses gen_wiring.py)
 ├── dsPIC33CK_Nano_Labs_TH.html    the same guide in Thai (คู่มือการทดลองภาษาไทย)
 ├── hardware/dspicnano/dspic33ck/  the Arduino platform (copy into <sketchbook>/hardware/)
 │   ├── boards.txt                 board "dsPIC33CK Nano", Clock / Debugger / Bootloader menus
@@ -32,7 +35,8 @@ arduino/
 │   ├── libraries/NanoTimer/       Timer1/2/3 periodic interrupts (SCCP1-3)
 │   ├── libraries/NanoServo/       hobby servos, up to 4, from SCCP hardware
 │   ├── libraries/NanoSerial2/     second UART (Serial2), RS485 direction pin
-│   └── libraries/dsPIC33CK_Nano/examples/Lab01..Lab30
+│   ├── libraries/dsPIC33CK_Nano/examples/Lab01..Lab30
+│   └── libraries/dsPIC33CK_Nano_Peripherals/examples/Lab31..Lab38   (peripheral labs)
 ├── tools/gen_pinout_html.py       regenerates the pinout page (checks it against the core)
 ├── tools/gen_wiring.py            breadboard wiring diagram (SVG) for every lab, pins from the PCB netlist
 └── tools/embed_wiring.py          puts those diagrams into dsPIC33CK_Nano_Labs.html (re-runnable)
@@ -100,6 +104,22 @@ For manual entry: hold USER, tap RESET, and keep holding USER for about 1 s.
 | 28 | Lab28_WatchdogClock | watchdog: WDTset(ms) / WDTclear() (Watchdog.h tab), hang finder, window mode, software reset with saved reason, oscillator switching at run time | none (scope on D9 optional) |
 | 29 | Lab29_LineFollower | line follower robot: NanoServo (SCCP servo pulses), IR array calibration, PD steering, HC-05 Bluetooth remote on Serial2 | 2 continuous servos, 5x IR array on J2-15..19, HC-05 on J2-4/5/6, 4xAA |
 | 30 | Lab30_PIDTemperature | PID temperature control: anti-windup, relay autotune, Serial Plotter, simulated heater (PID.h / Heater.h tabs) | MCP9700A on J2-15, MOSFET + 10R 5W heater on J3-21 (or none: simulated) |
+
+**Peripheral labs 31-38** are in their own examples folder,
+`libraries/dsPIC33CK_Nano_Peripherals` (File > Examples > dsPIC33CK_Nano_Peripherals).
+Its README has the details and the test status; the step-by-step guide is
+`dsPIC33CK_Nano_Peripheral_Labs.html`:
+
+| # | Sketch | What it teaches | Wiring |
+|---|--------|-----------------|--------|
+| 31 | Lab31_AnalogComparator | comparator + DAC threshold, hysteresis, output to a pin by PPS, edge/frequency counter, SAR ADC from DAC + comparator (100 MIPS) | pot on J2-15, jumper J3-16 to J3-17 |
+| 32 | Lab32_PPS | Peripheral Pin Select: remap a PWM and an interrupt input at run time, virtual pins (internal loop-back), IOLOCK, pin-map dump | none |
+| 33 | Lab33_PTG | Peripheral Trigger Generator: step programs that run with zero CPU time (LED blink, button burst, software step, 1 kHz on D9) | none (scope on J3-15 optional) |
+| 34 | Lab34_CRC | hardware CRC engine: CRC-8/16/32 self-test, speed, Modbus frame check, flash fingerprint | none |
+| 35 | Lab35_DeadmanTimer | Deadman Timer: instruction-count watchdog with a window; too late / too early / wrong key | none (PICkit upload for the config words) |
+| 36 | Lab36_DSPMath | Q15, accumulators, saturation, MAC and REPEAT+MAC benchmark, FIR, RMS, Goertzel DTMF | none (pot on J2-15 for the live filter) |
+| 37 | Lab37_HighResPWM | 6 independent PWM channels (duty + phase) from PG1-PG3 at 2.5 ns steps (FVCO/2 clock) + dithering; resolution vs frequency, interleave, LED fading (100 MIPS; the MC005 has no 250 ps HRPWM) | scope or 6 LEDs on J2-4..J2-9 |
+| 38 | Lab38_AdvancedADC | the full 12-bit ADC with ADC.h: all 22 channels from one trigger, resolution and speed, timer / PWM / continuous triggers, digital comparator, oversampling and averaging, signed/differential/fractional, AVDD from the band gap | pot on J2-15 (+ optional divider on J2-13) |
 
 Labs are grouped **Basics 01-09 -> Advanced 10-19 -> Application 20-27**.
 Lab 28 belongs to Advanced, Labs 29 and 30 to Application; they were added later.

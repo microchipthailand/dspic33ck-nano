@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsPIC33CK Nano - Lab Manuals</title>
+<meta name="description" content="Lab manuals for the dsPIC33CK Nano board (dsPIC33CK256MC005): 30 main labs and 8 peripheral labs, in English and Thai.">
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--muted:#5b6475;--line:#dde1e8;--accent:#c8102e;--accent-ink:#fff;--new:#0a7d3b;--link:#0b5cad}
+@media (prefers-color-scheme:dark){:root{--bg:#12151b;--card:#1b2029;--ink:#e6e9ef;--muted:#9aa3b2;--line:#2c3340;--accent:#e2364f;--new:#3cc47a;--link:#6fb3ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI","Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif}
+a{color:var(--link)}
+.wrap{max-width:960px;margin:0 auto;padding:28px 16px 48px}
+header h1{margin:0 0 4px;font-size:1.9rem}
+header p{margin:0;color:var(--muted)}
+h2{font-size:1.15rem;margin:32px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card.new{border-color:var(--new);box-shadow:0 0 0 1px var(--new) inset}
+.card h3{margin:0 0 6px;font-size:1.05rem}
+.card p{margin:0 0 14px;color:var(--muted);font-size:.93rem}
+.badge{display:inline-block;background:var(--new);color:#fff;font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:999px;vertical-align:2px;margin-right:6px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-block;text-decoration:none;background:var(--accent);color:var(--accent-ink);padding:7px 14px;border-radius:6px;font-weight:600;font-size:.92rem}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:.93rem}
+th,td{text-align:left;padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+th{border-top:0;background:var(--bg);color:var(--muted);font-weight:600}
+td:first-child{white-space:nowrap}
+.tablewrap{overflow-x:auto}
+img.board{display:block;width:100%;max-width:960px;height:auto;border-radius:10px;border:1px solid var(--line);margin-top:8px}
+code{overflow-wrap:anywhere;word-break:break-all}
+footer{margin-top:36px;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>dsPIC33CK Nano</h1>
+  <p>Lab manuals for the open-hardware dsPIC33CK256MC005 breadboard board with an Arduino-compatible core: 38 labs in English and Thai.</p>
+</header>
+
+<h2>Lab manuals</h2>
+<div class="grid">
+  <div class="card new">
+    <h3><span class="badge">NEW</span>Peripheral labs 31-38</h3>
+    <p>The special hardware of the dsPIC33CK256MC005: comparator, PPS, PTG, CRC, Deadman Timer, DSP math, six-channel PWM and the full 12-bit ADC.</p>
+    <div class="btns">
+      <a class="btn" href="arduino/dsPIC33CK_Nano_Peripheral_Labs.html">English</a>
+      <a class="btn" href="arduino/dsPIC33CK_Nano_Peripheral_Labs_TH.html" lang="th">ภาษาไทย</a>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Main labs 01-30</h3>
+    <p>Basics, Advanced and Application: from Blink, Serial and ADC to DMA, RTOS, CAN, LIN, a line-follower robot and PID temperature control.</p>
+    <div class="btns">
+      <a class="btn" href="arduino/dsPIC33CK_Nano_Labs.html">English</a>
+      <a class="btn" href="arduino/dsPIC33CK_Nano_Labs_TH.html" lang="th">ภาษาไทย</a>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Board pinout</h3>
+    <p>Every header pin, its chip pin and its Arduino functions.</p>
+    <div class="btns">
+      <a class="btn alt" href="arduino/dsPIC33CK_Nano_Pinout.html">Open pinout</a>
+    </div>
+  </div>
+</div>
+
+<h2><span class="badge">NEW</span>Peripheral labs 31-38</h2>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Lab</th><th>Topic</th><th>What you build</th></tr></thead>
+<tbody>
+<tr><td><a href="arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab31">Lab 31</a></td><td>Analog comparator</td><td>CMP1 + DAC threshold, hysteresis, edge counter, a SAR ADC built from DAC + comparator</td></tr>
+<tr><td><a href="arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab32">Lab 32</a></td><td>Peripheral Pin Select</td><td>Move a PWM and an interrupt input between pins at run time, virtual pins, IOLOCK</td></tr>
+<tr><td><a href="arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab33">Lab 33</a></td><td>Peripheral Trigger Generator</td><td>A step program that blinks the LED, reacts to the button and makes 1 kHz with zero CPU time</td></tr>
+<tr><td><a href="arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab34">Lab 34</a></td><td>CRC engine</td><td>CRC-8/16/32 self-test, speed against software, Modbus frame check, flash fingerprint</td></tr>
+<tr><td><a href="arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab35">Lab 35</a></td><td>Deadman Timer</td><td>Instruction-count watchdog with a window: too late, too early and wrong key are caught</td></tr>
+<tr><td><a href="arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab36">Lab 36</a></td><td>DSP math</td><td>Q15, 40-bit accumulators, MAC, FIR benchmark, RMS, Goertzel DTMF decoder</td></tr>
+<tr><td><a href="arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab37">Lab 37</a></td><td>Six-channel PWM</td><td>6 independent channels at 2.5 ns plus dithering, 6-phase interleave, breathing LEDs</td></tr>
+<tr><td><a href="arduino/dsPIC33CK_Nano_Peripheral_Labs.html#lab38">Lab 38</a></td><td>Advanced 12-bit ADC</td><td>All 22 channels, 6-12 bit, timer/PWM triggers, compare window, oversampling, AVDD from the band gap</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Board</h2>
+<img class="board" src="docs/images/pinout.png" alt="dsPIC33CK Nano pinout: J2 on the left, J3 on the right, USB-C at the top">
+
+<h2>Get started</h2>
+<p>Arduino IDE: add this URL under <em>File → Preferences → Additional boards manager URLs</em>, then install <strong>dsPIC33CK Nano</strong> in the Boards Manager:</p>
+<p><code>https://raw.githubusercontent.com/microchipthailand/dspic33ck-nano/main/package_dspicnano_index.json</code></p>
+<p>Source code, PCB files, the MPLAB X bootloader host and setup details are on <a href="https://github.com/microchipthailand/dspic33ck-nano">GitHub</a>.</p>
+
+<footer>
+  The board has not been built or tested on real hardware yet. All labs compile, and many were checked in the MPLAB simulator.<br>
+  An independent, Arduino-compatible project. Not affiliated with or endorsed by Arduino SA. "Arduino" is a trademark of Arduino SA. Microchip, dsPIC and MPLAB are trademarks of Microchip Technology Inc. MIT licence.
+</footer>
+</div>
+</body>
+</html>

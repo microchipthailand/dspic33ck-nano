@@ -23,3 +23,5 @@ _ref/
 Thumbs.db
 .DS_Store
 dist/
+# bootloader-host test runner (built by build.cmd)
+bootloader-host/bin/NanoBootloaderTests.exe

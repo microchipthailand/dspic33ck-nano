@@ -19,3 +19,5 @@
 *.gbrjob -diff
 *.kicad_pcb linguist-generated=false
 *.kicad_sch linguist-generated=false
+*.cmd text eol=crlf
+*.exe binary

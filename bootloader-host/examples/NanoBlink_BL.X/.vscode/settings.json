@@ -1,0 +1,6 @@
+{
+    // Used by .vscode/tasks.json. Point these at your copy of the tools and the USB-serial adapter on J5.
+    "nanoBootloader.tool": "C:\\NanoBootloader\\nanobl.exe",
+    "nanoBootloader.gui": "C:\\NanoBootloader\\NanoBootloader.exe",
+    "nanoBootloader.port": "COM7"
+}

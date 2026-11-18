@@ -1,0 +1,57 @@
+{
+    // dsPIC33CK Nano serial bootloader tasks. Set the tool path and COM port once in .vscode/settings.json.
+    // Run with Terminal > Run Task... (or bind "workbench.action.tasks.runTask" to a key).
+    "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "imageFile",
+            "type": "promptString",
+            "description": "Application .hex / .bin / .elf to program (path relative to the workspace or absolute)",
+            "default": "dist/default/production/NanoBlink_BL.X.production.hex"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Nano: build (MPLAB X makefile)",
+            "type": "shell",
+            "command": "make",
+            "args": ["-f", "nbproject/Makefile-default.mk", "CONF=default", "build"],
+            "options": { "env": { "PATH": "C:\\Program Files\\Microchip\\MPLABX\\v6.35\\gnuBins\\GnuWin32\\bin;${env:PATH}" } },
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Nano: program via bootloader",
+            "detail": "programs the production HEX of this MPLAB X project over J5",
+            "type": "process",
+            "command": "${config:nanoBootloader.tool}",
+            "args": ["--port", "${config:nanoBootloader.port}",
+                     "--file", "${workspaceFolder}/dist/default/production/${workspaceFolderBasename}.production.hex",
+                     "--wait", "20"],
+            "problemMatcher": []
+        },
+        {
+            "label": "Nano: build and program",
+            "dependsOrder": "sequence",
+            "dependsOn": ["Nano: build (MPLAB X makefile)", "Nano: program via bootloader"],
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Nano: program a file via bootloader",
+            "detail": "asks for the file - e.g. the HEX the MPLAB extension for VS Code writes under out/",
+            "type": "process",
+            "command": "${config:nanoBootloader.tool}",
+            "args": ["--port", "${config:nanoBootloader.port}", "--file", "${input:imageFile}", "--wait", "20"],
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Nano: open the bootloader GUI",
+            "type": "process",
+            "command": "${config:nanoBootloader.gui}",
+            "args": ["${workspaceFolder}/dist/default/production/${workspaceFolderBasename}.production.hex"],
+            "problemMatcher": []
+        }
+    ]
+}
